@@ -20,6 +20,7 @@ class VirtualEnvController {
     }
 
     async getAvailableService(req: Request, res: Response) {
+        console.log('!!!.getAvailableService');
         const microInfraService = new MicroInfraService(process.env.GITHUB_API_TOKEN);
         const services = await microInfraService.getAllServices()
         return res.json({ code: 'ok', data: services });
