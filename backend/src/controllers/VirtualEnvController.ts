@@ -55,6 +55,28 @@ class VirtualEnvController {
             res.json(e)
         }
     }
+
+    async show(req: Request, res: Response) {
+        const virtualEnvRepository = getRepository(VirtualEnv)
+        const virtualEnv = await virtualEnvRepository.findOne({
+            id: req.params.id
+        })
+
+        if (!virtualEnv) {
+            return  res.json({ code: 'error', msg: 'Entity not found' });
+        }
+
+        return  res.json({ code: 'ok', data: virtualEnv });
+    }
+
+    async delete(req: Request, res: Response) {
+        const virtualEnvRepository = getRepository(VirtualEnv)
+        const virtualEnv = await virtualEnvRepository.delete({
+            id: req.params.id
+        })
+
+        return  res.json({ code: 'ok', data: [] });
+    }
 }
 
 export default new VirtualEnvController();
