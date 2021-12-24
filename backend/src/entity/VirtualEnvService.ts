@@ -9,12 +9,11 @@ import {
     UpdateDateColumn,
     Generated,
     OneToOne,
-    JoinColumn, OneToMany
+    JoinColumn
 } from 'typeorm';
-import {VirtualEnvService} from "./VirtualEnvService";
 
 @Entity()
-export class VirtualEnv extends BaseEntity{
+export class VirtualEnvService extends BaseEntity{
     @PrimaryGeneratedColumn({
         type: "bigint"
     })
@@ -24,26 +23,23 @@ export class VirtualEnv extends BaseEntity{
     @Column({
         nullable:true
     })
-    title:string;
+    virtual_env_id:string;
 
     @Column({
         nullable:true
     })
-    owner:string;
+    service_name:string;
 
     @Column({
         nullable:true,
         type:"text"
     })
-    description:string
+    service_header:string
 
     @CreateDateColumn()
     created_at: string;
 
     @UpdateDateColumn({ type: "timestamp" })
     updated_at: number;
-
-    @OneToMany()
-    services: VirtualEnvService[];
 
 }
