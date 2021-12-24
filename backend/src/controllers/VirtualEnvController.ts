@@ -15,7 +15,10 @@ class VirtualEnvController {
 
     async index(req: Request, res: Response) {
         const virtualEnvRepository = getRepository(VirtualEnv);
-        const virtualEnvCollection = await virtualEnvRepository.find();
+        const virtualEnvCollection = await virtualEnvRepository.find({
+            cache:false,
+            relations: ['services']
+        });
         return res.json({ code: 'ok', data: virtualEnvCollection });
     }
 
@@ -58,7 +61,13 @@ class VirtualEnvController {
     async show(req: Request, res: Response) {
         const virtualEnvRepository = getRepository(VirtualEnv)
         const virtualEnv = await virtualEnvRepository.findOne({
-            id: req.params.id
+            where: {id:req.params.id},
+            relations: ['services'],
+        });
+
+        const sql = await virtualEnvRepository.findOne({
+            where: {id:req.params.id},
+            relations: ['services'],
         })
 
         if (!virtualEnv) {
