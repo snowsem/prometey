@@ -12,6 +12,7 @@ import {
     JoinColumn, OneToMany
 } from 'typeorm';
 import {VirtualEnvService} from "./VirtualEnvService";
+import {JoinTable} from "typeorm/browser";
 
 @Entity()
 export class VirtualEnv extends BaseEntity{
@@ -43,7 +44,7 @@ export class VirtualEnv extends BaseEntity{
     @UpdateDateColumn({ type: "timestamp" })
     updated_at: number;
 
-    @OneToMany()
-    services: VirtualEnvService[];
+    @OneToMany(() => VirtualEnvService, ves => ves.virtualEnv)
+    virtualEnvServices: VirtualEnvService[];
 
 }

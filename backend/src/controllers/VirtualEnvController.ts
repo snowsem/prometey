@@ -17,7 +17,7 @@ class VirtualEnvController {
         const virtualEnvRepository = getRepository(VirtualEnv);
         const virtualEnvCollection = await virtualEnvRepository.find({
             cache:false,
-            relations: ['services']
+            relations: ['virtualEnvServices']
         });
         return res.json({ code: 'ok', data: virtualEnvCollection });
     }
@@ -62,13 +62,9 @@ class VirtualEnvController {
         const virtualEnvRepository = getRepository(VirtualEnv)
         const virtualEnv = await virtualEnvRepository.findOne({
             where: {id:req.params.id},
-            relations: ['services'],
+            relations: ['virtualEnvServices'],
         });
 
-        const sql = await virtualEnvRepository.findOne({
-            where: {id:req.params.id},
-            relations: ['services'],
-        })
 
         if (!virtualEnv) {
             return  res.json({ code: 'error', msg: 'Entity not found' });

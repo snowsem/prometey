@@ -9,8 +9,9 @@ import {
     UpdateDateColumn,
     Generated,
     OneToOne,
-    JoinColumn
+    JoinColumn, ManyToOne
 } from 'typeorm';
+import {VirtualEnv} from "./VirtualEnv";
 
 @Entity()
 export class VirtualEnvService extends BaseEntity{
@@ -19,11 +20,6 @@ export class VirtualEnvService extends BaseEntity{
     })
     @Index({ unique: true })
     id: string;
-
-    @Column({
-        nullable:true
-    })
-    virtual_env_id:string;
 
     @Column({
         nullable:true
@@ -41,5 +37,8 @@ export class VirtualEnvService extends BaseEntity{
 
     @UpdateDateColumn({ type: "timestamp" })
     updated_at: number;
+
+    @ManyToOne(() => VirtualEnv, virtualEnv => virtualEnv.virtualEnvServices)
+    virtualEnv: VirtualEnv;
 
 }
