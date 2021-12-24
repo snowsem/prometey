@@ -3,6 +3,7 @@ import { AppLogger } from '../logger';
 import {getRepository} from "typeorm";
 import {VirtualEnv} from "../entity/VirtualEnv";
 import {validate} from "../validators";
+import {MicroInfraService} from "../services/MicroInfraService";
 
 export interface IVirtualEnvPayload {
     title: string;
@@ -16,6 +17,15 @@ class VirtualEnvController {
         const virtualEnvRepository = getRepository(VirtualEnv);
         const virtualEnvCollection = await virtualEnvRepository.find();
         return res.json({ code: 'ok', data: virtualEnvCollection });
+    }
+
+    async getAvailableService(req: Request, res: Response) {
+        const microInfraService = new MicroInfraService(process.env.GITHUB_API_TOKEN);
+        const services = await microInfraService.getAllServices()
+        return res.json({ code: 'ok', data: services });
+        //console.log(services)
+        //console.log(microInfraService.headersDecorator(services))
+        //console.log(await microInfraService.getServiceValue('slates'))
     }
 
     async create(req: Request, res: Response) {

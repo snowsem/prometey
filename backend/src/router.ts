@@ -9,6 +9,7 @@ router.get( '/', );
 
 router.get('/virtual_env', VirtualEnvController.index)
 router.post('/virtual_env', VirtualEnvController.create)
+router.post('/get_services', VirtualEnvController.getAvailableService)
 
 router.get('/incoming', (req, res)=>{
     AppLogger.log({
