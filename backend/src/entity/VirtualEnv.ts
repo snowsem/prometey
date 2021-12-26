@@ -44,7 +44,11 @@ export class VirtualEnv extends BaseEntity{
     @UpdateDateColumn({ type: "timestamp" })
     updated_at: number;
 
-    @OneToMany(() => VirtualEnvService, ves => ves.virtualEnv)
+    @OneToMany(() => VirtualEnvService, ves => ves.virtualEnv, {
+        cascade: true,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
     virtualEnvServices: VirtualEnvService[];
 
 }

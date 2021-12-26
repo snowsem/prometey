@@ -28,11 +28,24 @@ export class VirtualEnvService extends BaseEntity{
     })
     service_name:string;
 
+
     @Column({
         nullable:true,
         type:"text"
     })
     service_header:string
+
+    @Column({
+        nullable:true,
+        type:"text"
+    })
+    service_header_value:string
+
+    @Column({
+        nullable:true,
+        type:"text"
+    })
+    service_github_tag:string
 
     @CreateDateColumn()
     created_at: string;
@@ -47,6 +60,14 @@ export class VirtualEnvService extends BaseEntity{
         }
     )
     virtual_env_id: number
+
+    @Column(
+        {
+            default:true,
+            type:"bool"
+        }
+    )
+    is_enable: number
 
     @ManyToOne(() => VirtualEnv, virtualEnv => virtualEnv.virtualEnvServices)
     @JoinColumn({name: 'virtual_env_id'})
