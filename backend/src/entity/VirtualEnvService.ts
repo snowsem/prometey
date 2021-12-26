@@ -8,12 +8,14 @@ import {
     PrimaryColumn,
     UpdateDateColumn,
     Generated,
+    Unique,
     OneToOne,
     JoinColumn, ManyToOne
 } from 'typeorm';
 import {VirtualEnv} from "./VirtualEnv";
 
 @Entity()
+@Unique("uniq_pair", ["service_name", "virtual_env_id"])
 export class VirtualEnvService extends BaseEntity{
     @PrimaryGeneratedColumn({
         type: "bigint"
@@ -38,7 +40,16 @@ export class VirtualEnvService extends BaseEntity{
     @UpdateDateColumn({ type: "timestamp" })
     updated_at: number;
 
+    @Column(
+        {
+            nullable:true,
+            type:"number"
+        }
+    )
+    virtual_env_id: number
+
     @ManyToOne(() => VirtualEnv, virtualEnv => virtualEnv.virtualEnvServices)
+    @JoinColumn({name: 'virtual_env_id'})
     virtualEnv: VirtualEnv;
 
 }

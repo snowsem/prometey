@@ -14,12 +14,31 @@ export interface IVirtualEnvPayload {
 class VirtualEnvController {
 
     async index(req: Request, res: Response) {
+        const limit = req.query.limit ? parseInt(<string>req.query.limit) : 10;
+        const offset = req.query.offset ? parseInt(<string>req.query.offset) : 0;
+
         const virtualEnvRepository = getRepository(VirtualEnv);
-        const virtualEnvCollection = await virtualEnvRepository.find({
+        const [data, count] = await virtualEnvRepository.findAndCount({
             cache:false,
-            relations: ['virtualEnvServices']
+            skip: offset * limit,
+            take: limit,
+            order: {
+                id: "DESC"
+            },
+            relations: ['virtualEnvServices'],
+
         });
-        return res.json({ code: 'ok', data: virtualEnvCollection });
+
+        const totalPages = Math.ceil(count / limit)
+        const currentPage = Math.ceil(count % limit)
+
+        return res.json({ code: 'ok',
+            total: count,
+            count: data.length,
+            pages: totalPages,
+            currentPage: currentPage,
+            data: data
+        });
     }
 
     async getAvailableService(req: Request, res: Response) {

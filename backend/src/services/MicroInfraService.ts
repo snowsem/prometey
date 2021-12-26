@@ -37,5 +37,11 @@ export class MicroInfraService {
         return YAML.parse(data).global;
     }
 
+    getServiceTags = async (serviceName)=>{
+        const { data } = await this.api.rest.repos.listTags({...this.repoSetting});
+        return data;
+
+    }
+
 }
 
