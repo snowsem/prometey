@@ -1,5 +1,6 @@
 import {Octokit} from 'octokit';
 const YAML = require('yaml')
+import crypto from 'crypto';
 
 export class MicroInfraService {
 
@@ -41,6 +42,11 @@ export class MicroInfraService {
         return YAML.parse(data).global;
     }
 
+    createBranch = async (name)=>{
+        const b = await this.api.rest.git.getRef(this.repoSetting);
+        return b
+    }
+
     getServiceTags = async (serviceName)=>{
         const values = await this.getServiceValue(serviceName);
         console.log(values)
@@ -50,6 +56,5 @@ export class MicroInfraService {
         });
         return data;
     }
-
 }
 

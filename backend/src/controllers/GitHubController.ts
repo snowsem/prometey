@@ -17,6 +17,12 @@ class GitHubController {
         return res.json({ code: 'ok', data: services });
 
     }
+
+    async createPullRequest(req: Request, res: Response) {
+        const microInfraService = new MicroInfraService(process.env.GITHUB_API_TOKEN);
+        const b = await microInfraService.createBranch('test-semen');
+        res.send({code:'ok', data: b})
+    }
 }
 
 export default new GitHubController();
