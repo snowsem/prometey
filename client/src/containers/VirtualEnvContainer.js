@@ -138,7 +138,7 @@ export class VirtualEnvContainer extends Component {
                             }
                             this.setState({ virtualEnv: {
                                     ...this.state.virtualEnv,
-                                    data: this.state.virtualEnv.data.filter(({ _id }) => _id !== id )
+                                    data: this.state.virtualEnv.data.filter(({ id: _id }) => _id !== id )
                                 },
                             });
                         } catch (e) {

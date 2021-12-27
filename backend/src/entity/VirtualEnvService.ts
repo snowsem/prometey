@@ -69,7 +69,7 @@ export class VirtualEnvService extends BaseEntity{
     )
     is_enable: number
 
-    @ManyToOne(() => VirtualEnv, virtualEnv => virtualEnv.virtualEnvServices)
+    @ManyToOne(() => VirtualEnv, virtualEnv => virtualEnv.virtualEnvServices, { onDelete: 'CASCADE' })
     @JoinColumn({name: 'virtual_env_id'})
     virtualEnv: VirtualEnv;
 
