@@ -49,10 +49,38 @@ export class MicroInfraService {
         //     {...this.repoSetting, ref:`refs/heads/${branchName}`, sha: mainRefSha}
         // )
         // return newBranch
+        // let b = new Buffer('Node');
+        // let s = b.toString('base64');
+        //
+        // const fileSha =await this.getFileSha('api/slates/stage/values-semen.yaml', 'semen-branch')
+        // const file = await this.api.rest.repos.createOrUpdateFileContents({
+        //     owner: this.repoSetting.owner,
+        //     repo: this.repoSetting.repo,
+        //     path: 'api/slates/stage/values-semen.yaml',
+        //     message:'test commit -1',
+        //     sha: fileSha,
+        //     content:s,
+        //     branch: 'semen-branch',
+        //     "committer.name":'snowsem',
+        //     "committer.email":'snowsem@rambler.ru',
+        //     "author.name":'snowsem',
+        //     "author.email":'snowsem@rambler.ru'
+        // });
+        //
+        // return file
 
-        const file = await this.api.rest.repos.createOrUpdateFileContents({
+        // const createPull = this.api.rest.pulls.create({
+        //     owner: this.repoSetting.owner,
+        //     repo: this.repoSetting.repo,
+        //     head: 'semen-branch',
+        //     base: 'main',
+        //     title: 'test pull',
+        // });
+        //
+        // return createPull
 
-        });
+        //const  data  = await this.api.rest.repos.getContent({...this.repoSetting, ref:'semen-branch', path: `api/slates/stage/values-semen.yaml`});
+
 
 
     }
@@ -66,5 +94,24 @@ export class MicroInfraService {
         });
         return data;
     }
+
+    getFileSha = async (filePath, branch) =>{
+        try {
+            const { data: { sha } } = await this.api.request('GET /repos/{owner}/{repo}/contents/{file_path}', {
+                owner: this.repoSetting.owner,
+                repo: this.repoSetting.repo,
+                ref: branch,
+                file_path: filePath
+            });
+            console.log(sha)
+            return sha
+        } catch (e) {
+            if (e.status === 404) {
+                return null
+            }
+            return null
+        }
+    }
+
 }
 
