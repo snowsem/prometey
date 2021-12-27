@@ -15,7 +15,7 @@ import {VirtualEnvService} from "./VirtualEnvService";
 import {JoinTable} from "typeorm/browser";
 
 @Entity()
-export class VirtualEnv extends BaseEntity{
+export class User extends BaseEntity{
     @PrimaryGeneratedColumn({
         type: "bigint"
     })
@@ -25,30 +25,32 @@ export class VirtualEnv extends BaseEntity{
     @Column({
         nullable:true
     })
-    title:string;
+    first_name:string;
 
     @Column({
         nullable:true
     })
-    owner:string;
+    last_name:string;
+
+    @Column({
+        nullable:true
+    })
+    login:string;
+
+    @Column({
+        nullable:true
+    })
+    password:string;
 
     @Column({
         nullable:true,
-        type:"text"
+        type: "text"
     })
-    description:string
+    token:string;
 
     @CreateDateColumn()
     created_at: string;
 
     @UpdateDateColumn({ type: "timestamp" })
     updated_at: number;
-
-    @OneToMany(() => VirtualEnvService, ves => ves.virtualEnv, {
-        cascade: true,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
-    virtualEnvServices: VirtualEnvService[];
-
 }

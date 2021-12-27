@@ -8,11 +8,14 @@ import {
     PrimaryColumn,
     UpdateDateColumn,
     Generated,
+    Unique,
     OneToOne,
-    JoinColumn
+    JoinColumn, ManyToOne
 } from 'typeorm';
+import {VirtualEnv} from "./VirtualEnv";
 
 @Entity()
+@Unique("uniq_pair", ["service_name", "virtual_env_id"])
 export class VirtualEnvService extends BaseEntity{
     @PrimaryGeneratedColumn({
         type: "bigint"
@@ -23,12 +26,8 @@ export class VirtualEnvService extends BaseEntity{
     @Column({
         nullable:true
     })
-    virtual_env_id:string;
-
-    @Column({
-        nullable:true
-    })
     service_name:string;
+
 
     @Column({
         nullable:true,
@@ -36,10 +35,42 @@ export class VirtualEnvService extends BaseEntity{
     })
     service_header:string
 
+    @Column({
+        nullable:true,
+        type:"text"
+    })
+    service_header_value:string
+
+    @Column({
+        nullable:true,
+        type:"text"
+    })
+    service_github_tag:string
+
     @CreateDateColumn()
     created_at: string;
 
     @UpdateDateColumn({ type: "timestamp" })
     updated_at: number;
+
+    @Column(
+        {
+            nullable:true,
+            type:"number"
+        }
+    )
+    virtual_env_id: number
+
+    @Column(
+        {
+            default:true,
+            type:"bool"
+        }
+    )
+    is_enable: number
+
+    @ManyToOne(() => VirtualEnv, virtualEnv => virtualEnv.virtualEnvServices)
+    @JoinColumn({name: 'virtual_env_id'})
+    virtualEnv: VirtualEnv;
 
 }
