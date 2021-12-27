@@ -25,7 +25,6 @@ export class VirtualEnvList extends Component{
                 dataIndex: 'delete',
                 render: (text, record) => (
                     <Button type="primary" onClick={(e)=> {
-                        console.log('!!!.record', record);
                         e.stopPropagation();
                         this.props.openDeleteModal(record.id);
                         console.log('record')
