@@ -6,7 +6,7 @@ function errorsMiddleware(err: HttpError, req: Request, res: Response, next: Nex
     status: err.status || 500,
     title: err.message || err.name || 'Unknown error',
   };
-
+  console.log(error);
   res.status(error.status);
   res.json({
     errors: [error],

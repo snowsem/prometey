@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { AppLogger } from '../logger';
-import {getConnection, getRepository} from "typeorm";
+import { getRepository} from "typeorm";
 import {VirtualEnv} from "../entity/VirtualEnv";
 import {validate} from "../validators";
 import {MicroInfraService} from "../services/MicroInfraService";
 import {VirtualEnvService} from "../entity/VirtualEnvService";
 import {_} from 'lodash'
+import createHttpError from 'http-errors';
 
 export interface IVirtualEnvPayload {
     title: string;
@@ -43,7 +43,7 @@ class VirtualEnvController {
         });
     }
 
-    async create(req: Request, res: Response) {
+    async create(req: Request, res: Response, next) {
         try {
             const microInfraService = new MicroInfraService(process.env.GITHUB_API_TOKEN);
             const services = await microInfraService.getAllServices()
@@ -56,7 +56,7 @@ class VirtualEnvController {
             const validateResult = validate(rules, req.body);
 
             if (validateResult !== true) {
-               return res.json({ code: 'validation', msg: validateResult });
+                throw createHttpError(422, validateResult?.[0]?.message);
             }
 
             const virtualEnvRepository = getRepository(VirtualEnv);
@@ -82,9 +82,7 @@ class VirtualEnvController {
             const result = await virtualEnvRepository.save(virtualEnv);
             return  res.json({ code: 'ok', data: result });
         } catch (e) {
-            //const availableServices = await this.microInfraService.getAllServices()
-            console.log(e)
-            res.json(e)
+            next(e);
         }
     }
 

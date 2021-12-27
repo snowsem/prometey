@@ -153,7 +153,12 @@ export class VirtualEnvContainer extends Component {
                         this.setState({ idToDelete: null })
                     }}
                 />
-                <EditVirtualEnvModal data={this.state.editModalData} visible={this.state.showEditModal} openModalHandler={this.openEditModal} closeModalHandler={this.closeEditModal}/>
+                <EditVirtualEnvModal
+                    data={this.state.editModalData}
+                    visible={this.state.showEditModal}
+                    openModalHandler={this.openEditModal}
+                    closeModalHandler={this.closeEditModal}
+                />
             </div>
     );
     }

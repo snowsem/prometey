@@ -1,6 +1,6 @@
 import {Component} from "react";
 import Modal from "antd/es/modal/Modal";
-import {Input} from "antd";
+import {Input, notification} from "antd";
 
 export class CreateVirtualEnvModal extends Component {
 
@@ -42,7 +42,14 @@ export class CreateVirtualEnvModal extends Component {
             body: JSON.stringify({ title: this.state.name }),
         });
         const json = await response.json();
-        this.props.applyCreateModal(json.data);
+        if (response.status <= 400) {
+            this.props.applyCreateModal(json.data);
+        } else {
+            notification.error({
+                message: 'Oops',
+                description: json?.errors?.[0]?.title ?? 'Something went wrong. Try again later',
+            });
+        }
         this.props.closeModal()
     }
 
