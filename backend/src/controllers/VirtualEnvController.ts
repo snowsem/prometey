@@ -114,41 +114,47 @@ class VirtualEnvController {
 
     }
 
-    async update(req: Request, res: Response) {
-        const rules = {
-            title: 'string|min:6',
-        };
+    async update(req: Request, res: Response, next) {
+        try {
+            const rules = {
+                title: { type: "string", min: 6, optional: true },
+            };
 
-        const validateResult = validate(rules, req.body);
+            const validateResult = validate(rules, req.body);
 
-        if (validateResult !== true) {
-            return res.json({ code: 'validation', msg: validateResult });
-        }
-
-        const virtualEnvRepository = getRepository(VirtualEnv)
-        const virtualEnv = await virtualEnvRepository.findOne({
-            where: {id:req.params.id},
-            relations: ['virtualEnvServices'],
-        });
-
-        if (!virtualEnv) {
-            return  res.json({ code: 'error', msg: 'Entity not found' });
-        }
-
-        virtualEnv.title = req.body.title || virtualEnv.title
-        virtualEnv.virtualEnvServices.map(item=>{
-            const newValue = _.find(req.body.virtualEnvServices, ['id', item.id])
-            if (newValue) {
-                item.service_github_tag = newValue.service_github_tag || item.service_github_tag
-                item.is_enable = newValue.is_enable || item.is_enable
+            if (validateResult !== true) {
+                throw createHttpError(422, validateResult?.[0]?.message);
             }
-        });
 
-        console.log(virtualEnv.virtualEnvServices, req.body.virtualEnvServices)
-        //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
+            const virtualEnvRepository = getRepository(VirtualEnv)
+            const virtualEnv = await virtualEnvRepository.findOne({
+                where: {id: req.params.id},
+                relations: ['virtualEnvServices'],
+            });
 
-        const result = await virtualEnvRepository.save(virtualEnv);
-        return  res.json({ code: 'ok', data: result });
+            if (!virtualEnv) {
+                if (validateResult !== true) {
+                    throw createHttpError(404);
+                }
+            }
+
+            virtualEnv.title = req.body.title || virtualEnv.title
+            virtualEnv.virtualEnvServices.map(item => {
+                const newValue = _.find(req.body.virtualEnvServices, ['id', item.id])
+                if (newValue) {
+                    item.service_github_tag = newValue.service_github_tag || item.service_github_tag
+                    item.is_enable = newValue.is_enable || item.is_enable
+                }
+            });
+
+            console.log(virtualEnv.virtualEnvServices, req.body.virtualEnvServices)
+            //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
+
+            const result = await virtualEnvRepository.save(virtualEnv);
+            return res.json({code: 'ok', data: result});
+        } catch(e) {
+            next(e);
+        }
 
     }
 }
