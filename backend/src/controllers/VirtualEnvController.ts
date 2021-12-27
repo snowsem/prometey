@@ -103,13 +103,17 @@ class VirtualEnvController {
         return  res.json({ code: 'ok', data: virtualEnv });
     }
 
-    async delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response, next) {
         const virtualEnvRepository = getRepository(VirtualEnv)
-        const virtualEnv = await virtualEnvRepository.delete({
-            id: req.params.id
-        })
+        try {
+            await virtualEnvRepository.delete({
+                id: req.params.id
+            })
+            res.sendStatus(204);
+        } catch (e) {
+            next(e);
+        }
 
-        return  res.json({ code: 'ok', data: [] });
     }
 
     async update(req: Request, res: Response) {

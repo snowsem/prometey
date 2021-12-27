@@ -29,12 +29,29 @@ export class CreateVirtualEnvModal extends Component {
         this.props.closeModal()
     }
 
+    onOkHandler = async () => {
+        this.setState((state)=>{
+            return {...state, name: null}
+        });
+        const url = 'http://localhost:8888/virtual_env';
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title: this.state.name }),
+        });
+        const json = await response.json();
+        this.props.applyCreateModal(json.data);
+        this.props.closeModal()
+    }
+
     render() {
         return (
             <div>
-                <Modal title="Create Env" visible={this.props.visible} onOk={this.onCloseHandler} onCancel={this.onCloseHandler}>
+                <Modal title="Create Env" visible={this.props.visible} onOk={this.onOkHandler} onCancel={this.onCloseHandler}>
                     <p><Input
-                        placeholder="Basic usage"
+                        placeholder="Enter env name"
                         value={this.state.name}
                         onChange={this.onChangeName}
                     /></p>

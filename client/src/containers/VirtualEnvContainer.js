@@ -3,6 +3,8 @@ import {VirtualEnvList} from "../components/VirtualEnvList";
 import axios from "axios";
 import {CreateVirtualEnvModal} from "../components/CreateVirtualEnvModal";
 import {EditVirtualEnvModal} from "../components/EditVirtualEnvModal";
+import {ConformModal} from "../components/ConformModal";
+import { notification } from 'antd';
 
 export class VirtualEnvContainer extends Component {
     constructor() {
@@ -13,23 +15,33 @@ export class VirtualEnvContainer extends Component {
             //headers: {'X-Custom-Header': 'foobar'}
         })
         this.state = {
-            virtualEnv:[],
+            virtualEnv:{},
             isLoading: true,
             showCreateModal: false,
             showEditModal: false,
-            editModalData: null
+            editModalData: null,
+            idToDelete: null,
         }
     }
 
     openCreateModal = ()=>{
         this.setState((state)=>{
-            return {...state, showCreateModal:true}
+            return {showCreateModal:true}
+        });
+    }
+
+    applyCreateModal = (data) =>{
+        if (this.state.virtualEnv?.data === undefined) return;
+        this.setState({ virtualEnv: {
+            ...this.state.virtualEnv,
+            data: [data, ...this.state.virtualEnv.data]
+            },
         });
     }
 
     closeCreateModal = () =>{
         this.setState((state)=>{
-            return {...state, showCreateModal:false}
+            return {showCreateModal:false}
         });
     }
 
@@ -43,11 +55,11 @@ export class VirtualEnvContainer extends Component {
         }
 
         this.setState((state)=>{
-            return {...state, isLoading:true}
+            return {isLoading:true}
         });
-        const data = await this.api.get(`/virtual_env?${queryParams.toString()}`)
-        this.setState((state)=>{
-            return {...state, virtualEnv: data.data, isLoading:false}
+        const response = await this.api.get(`/virtual_env?${queryParams.toString()}`)
+        this.setState(()=>{
+            return {virtualEnv: response.data, isLoading:false}
         });
     }
 
@@ -78,24 +90,69 @@ export class VirtualEnvContainer extends Component {
         });
         const data = await this.api.get(`/virtual_env/${id}`)
         console.log(data.data.data)
-        this.setState((state)=>{
-            return {...state, showEditModal: true, editModalData: data.data.data,isLoading:false}
+        this.setState(()=>{
+            return {showEditModal: true, editModalData: data.data.data,isLoading:false}
         });
 
         console.log(this.state.editModalData)
     }
 
     closeEditModal = async ()=>{
-        this.setState((state)=>{
-            return {...state, showEditModal: false, editModalData: null}
+        this.setState(()=>{
+            return {showEditModal: false, editModalData: null}
         });
     }
 
     render() {
         return (
             <div>
-                <VirtualEnvList openEditModal={this.openEditModal} openModal={this.openCreateModal} handleChange={this.handleChange} isLoading={this.state.isLoading} data={this.state.virtualEnv}/>
-                <CreateVirtualEnvModal visible={this.state.showCreateModal} closeModal={this.closeCreateModal}/>
+                <VirtualEnvList
+                    openEditModal={this.openEditModal}
+                    openModal={this.openCreateModal}
+                    handleChange={this.handleChange}
+                    isLoading={this.state.isLoading}
+                    data={this.state.virtualEnv}
+                    openDeleteModal={(id) => this.setState({ idToDelete: id })}
+                />
+                <CreateVirtualEnvModal
+                    visible={this.state.showCreateModal}
+                    closeModal={this.closeCreateModal}
+                    applyCreateModal={this.applyCreateModal}
+                />
+                <ConformModal
+                    title="Delete this env?"
+                    visible={this.state.idToDelete !== null}
+                    onOkHandler={async () => {
+                        const id = this.state.idToDelete;
+                        const url = `http://localhost:8888/virtual_env/${id}`;
+                        try {
+                            const resp = await fetch(url, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ title: this.state.name }),
+                            });
+                            if (resp.status >= 400) {
+                                throw Error('Couldn\'t delete item');
+                            }
+                            this.setState({ virtualEnv: {
+                                    ...this.state.virtualEnv,
+                                    data: this.state.virtualEnv.data.filter(({ _id }) => _id !== id )
+                                },
+                            });
+                        } catch (e) {
+                            notification.error({
+                                message: 'Oops',
+                                description: 'Something went wrong. Try again later',
+                            });
+                        }
+                        this.setState({ idToDelete: null });
+                    }}
+                    onCloseHandler={() => {
+                        this.setState({ idToDelete: null })
+                    }}
+                />
                 <EditVirtualEnvModal data={this.state.editModalData} visible={this.state.showEditModal} openModalHandler={this.openEditModal} closeModalHandler={this.closeEditModal}/>
             </div>
     );
