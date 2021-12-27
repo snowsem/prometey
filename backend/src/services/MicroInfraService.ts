@@ -42,9 +42,19 @@ export class MicroInfraService {
         return YAML.parse(data).global;
     }
 
-    createBranch = async (name)=>{
-        const b = await this.api.rest.git.getRef(this.repoSetting);
-        return b
+    createBranch = async (branchName)=>{
+        // const mainRef = await this.api.rest.git.getRef({...this.repoSetting, ref:'heads/main'});
+        // const mainRefSha = mainRef.data.object.sha
+        // const newBranch = await this.api.rest.git.createRef(
+        //     {...this.repoSetting, ref:`refs/heads/${branchName}`, sha: mainRefSha}
+        // )
+        // return newBranch
+
+        const file = await this.api.rest.repos.createOrUpdateFileContents({
+
+        });
+
+
     }
 
     getServiceTags = async (serviceName)=>{
