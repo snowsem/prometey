@@ -1,6 +1,6 @@
 import {Component} from "react";
 import Modal from "antd/es/modal/Modal";
-import {Input} from "antd";
+import {Input, notification} from "antd";
 
 export class CreateVirtualEnvModal extends Component {
 
@@ -29,12 +29,36 @@ export class CreateVirtualEnvModal extends Component {
         this.props.closeModal()
     }
 
+    onOkHandler = async () => {
+        this.setState((state)=>{
+            return {...state, name: null}
+        });
+        const url = 'http://localhost:8888/virtual_env';
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title: this.state.name }),
+        });
+        const json = await response.json();
+        if (response.status <= 400) {
+            this.props.applyCreateModal(json.data);
+        } else {
+            notification.error({
+                message: 'Oops',
+                description: json?.errors?.[0]?.title ?? 'Something went wrong. Try again later',
+            });
+        }
+        this.props.closeModal()
+    }
+
     render() {
         return (
             <div>
-                <Modal title="Create Env" visible={this.props.visible} onOk={this.onCloseHandler} onCancel={this.onCloseHandler}>
+                <Modal title="Create Env" visible={this.props.visible} onOk={this.onOkHandler} onCancel={this.onCloseHandler}>
                     <p><Input
-                        placeholder="Basic usage"
+                        placeholder="Enter env name"
                         value={this.state.name}
                         onChange={this.onChangeName}
                     /></p>

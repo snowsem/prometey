@@ -30,6 +30,7 @@
     "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "@types/node": "^16.10.9",
     "dotenv": "^10.0.0",
     "fastest-validator": "^1.12.0",
