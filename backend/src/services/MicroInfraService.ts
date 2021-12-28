@@ -16,7 +16,7 @@ export class MicroInfraService {
             owner: "airslateinc",
             repo: "airslate-microservices-infra",
             path: "api",
-            ref: "heads/prometey-test-1"
+            ref: "prometey-test-1"
         }
     }
 
