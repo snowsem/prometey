@@ -30,6 +30,12 @@ export function CreateVirtualEnvModal(props) {
             });
     }, [visible]);
 
+    React.useEffect(() => {
+        if (visible) {
+            setName(null);
+        }
+    }, [visible]);
+
     const onCloseHandler = ()=>{
         closeModal();
     };
@@ -69,6 +75,7 @@ export function CreateVirtualEnvModal(props) {
                 title="Create Env"
                 visible={visible}
                 onCancel={onCloseHandler}
+                confirmLoading={!!isLoading}
             >
                 {isLoading ? (<Spin/>) : (
                     <>
