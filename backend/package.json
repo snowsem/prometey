@@ -7,7 +7,6 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
-    "cron": "node ./dist/cron/cron.js",
     "prestart": "npm run build",
     "start": "node .",
     "build:watch": "tsc -w",
