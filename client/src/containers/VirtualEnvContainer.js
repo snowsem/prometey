@@ -6,6 +6,8 @@ import {EditVirtualEnvModal} from "./EditVirtualEnvModal";
 import {ConformModal} from "../components/ConformModal";
 import { notification } from 'antd';
 
+const ws = new WebSocket('ws://localhost:8888')
+
 export class VirtualEnvContainer extends Component {
     constructor() {
         super();
@@ -78,6 +80,11 @@ export class VirtualEnvContainer extends Component {
     };
 
     componentDidMount() {
+        ws.onmessage = evt => {
+            // listen to the messages
+            const message = JSON.parse(evt.data);
+            // do something
+        }
         setTimeout(async ()=>{
             await this.getAllVirtualEnv()
         }, 1000);
