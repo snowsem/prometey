@@ -8,21 +8,9 @@ import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
 import wsClient from '../wsClient';
 
 export const createBranch = async ()=>{
+
     const infraService = new MicroInfraService();
      const values = await infraService.getValues('semen-branch')
-
-    // const env = await getRepository(VirtualEnv).findOne(
-    //     {
-    //         where: [
-    //             {status: VirtualEnvStatus.PENDING},
-    //             {status: VirtualEnvStatus.WAIT_PR},
-    //         ],
-    //         relations: ['virtualEnvServices']
-    //     }
-    // )
-
-    const a = await infraService.deleteBranch('semen-branch')
-    const b = await infraService.createBranch('semen-branch');
 
     const envs = await getRepository(VirtualEnv).find(
         {
@@ -35,6 +23,9 @@ export const createBranch = async ()=>{
     )
 
     if (envs) {
+
+        const a = await infraService.deleteBranch('semen-branch')
+        const b = await infraService.createBranch('semen-branch');
 
         envs.map( async (env)=>{
             const valuesMap = env.virtualEnvServices.map( async (srv)=>{
@@ -75,7 +66,7 @@ export const createBranch = async ()=>{
             const vp = await Promise.all(valuesMap)
             env.status = VirtualEnvStatus.READY;
             await env.save();
-            wsClient.send({ id: env.id, data:env });
+            //wsClient.send({ id: env.id, data:env });
         });
     }
 
