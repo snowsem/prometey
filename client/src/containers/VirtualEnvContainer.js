@@ -86,15 +86,12 @@ export class VirtualEnvContainer extends Component {
 
     openEditModal = async (id)=>{
         this.setState((state)=>{
-            return {...state, isLoading:true}
+            return {isLoading:true}
         });
-        const data = await this.api.get(`/virtual_env/${id}`)
-        console.log(data.data.data)
+        const data = await this.api.get(`/virtual_env/${id}`);
         this.setState(()=>{
-            return {showEditModal: true, editModalData: data.data.data,isLoading:false}
+            return {showEditModal: true, editModalData: data.data.data, isLoading:false}
         });
-
-        console.log(this.state.editModalData)
     }
 
     closeEditModal = async ()=>{
