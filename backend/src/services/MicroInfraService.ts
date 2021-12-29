@@ -7,7 +7,7 @@ export class MicroInfraService {
     private api: any ;
     private repoSetting: any;
 
-    constructor(accessToken) {
+    constructor(accessToken = process.env.GITHUB_API_TOKEN) {
         this.api = new Octokit({ auth: `${accessToken}` });
         this.repoSetting = {
             mediaType: {
@@ -21,11 +21,17 @@ export class MicroInfraService {
     }
 
     getAllServices = async ()=>{
-        const { data } = await this.api.rest.repos.getContent(this.repoSetting);
-        const services = data.map(item=>item.name)
+        try {
+            const { data } = await this.api.rest.repos.getContent(this.repoSetting);
+            const services = data.map(item=>item.name)
 
-        return services;
-
+            return services;
+        } catch (e) {
+            if (e.status === 404) {
+                return null
+            }
+            return null;
+        }
     }
 
     headersDecorator = (services)=>{
@@ -37,9 +43,15 @@ export class MicroInfraService {
     }
 
     getServiceValue = async (serviceName)=>{
-        const { data } = await this.api.rest.repos.getContent({...this.repoSetting, path: `api/${serviceName}/stage/values.yaml`});
-
-        return YAML.parse(data).global;
+        try {
+            const { data } = await this.api.rest.repos.getContent({...this.repoSetting, path: `api/${serviceName}/stage/values.yaml`});
+            return YAML.parse(data).global;
+        } catch (e) {
+            if (e.status === 404) {
+                return null
+            }
+            return null;
+        }
     }
 
     createBranch = async (branchName)=>{
@@ -86,13 +98,21 @@ export class MicroInfraService {
     }
 
     getServiceTags = async (serviceName)=>{
-        const values = await this.getServiceValue(serviceName);
-        console.log(values)
-        const { data } = await this.api.rest.repos.listTags({
-            owner: this.repoSetting.owner,
-            repo: values.image.repository,
-        });
-        return data;
+        try {
+            const values = await this.getServiceValue(serviceName);
+            console.log(values)
+            const { data } = await this.api.rest.repos.listTags({
+                owner: this.repoSetting.owner,
+                repo: values.image.repository,
+            });
+            return data;
+        } catch (e) {
+            if (e.status === 404) {
+                return null
+            }
+            return null
+        }
+
     }
 
     getFileSha = async (filePath, branch) =>{
@@ -111,6 +131,12 @@ export class MicroInfraService {
             }
             return null
         }
+    }
+
+    timeout = (callback)=> {
+        return setTimeout(()=>{
+            callback();
+        }, 500)
     }
 
 }
