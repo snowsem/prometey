@@ -8,7 +8,7 @@ function ServiceInput({ service }) {
             name={service.id}
             rules={[{ required: false, message: 'default' }]}
         >
-            <Input placeholder={`Default tag ${service.default_tag}`}/>
+            <Input placeholder={'default tag'}/>
         </Form.Item>
     )
 }

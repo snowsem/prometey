@@ -2,7 +2,7 @@ import {Component} from "react";
 import {VirtualEnvList} from "../components/VirtualEnvList";
 import axios from "axios";
 import {CreateVirtualEnvModal} from "../components/CreateVirtualEnvModal";
-import {EditVirtualEnvModal} from "../components/EditVirtualEnvModal";
+import {EditVirtualEnvModal} from "./EditVirtualEnvModal";
 import {ConformModal} from "../components/ConformModal";
 import { notification } from 'antd';
 

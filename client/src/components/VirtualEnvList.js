@@ -61,16 +61,17 @@ export class VirtualEnvList extends Component{
                 key: 'created_at',
             },
             {
+                title: 'Action',
                 key: 'delete',
                 dataIndex: 'delete',
                 render: (text, record) => (
-                    <Button type="primary" onClick={(e)=> {
+                    <a type="primary" onClick={(e)=> {
                         e.stopPropagation();
                         this.props.openDeleteModal(record.id);
                         console.log('record')
                     }}>
                         Delete
-                    </Button>
+                    </a>
                 ),
             },
         ];

@@ -89,7 +89,7 @@ export function CreateVirtualEnvModal(props) {
                         <Layout style={{ backgroundColor: "#fff" }}>
                             <ServicesForm
                                 id="create-tags-form"
-                                virtualEnvServices={availableServiceNames.map((serviceName) => ({ id: serviceName.name, service_name: serviceName.name, default_tag:serviceName.default_tag }))}
+                                virtualEnvServices={availableServiceNames.map((serviceName) => ({ id: serviceName, service_name: serviceName, default_tag: '' }))}
                                 onFinish={onOkHandler}
                                 initialValues={{}}
                             />
