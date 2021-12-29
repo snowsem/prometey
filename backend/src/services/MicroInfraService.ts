@@ -54,6 +54,16 @@ export class MicroInfraService {
         }
     }
 
+    getMainBranchSha = async ()=>{
+        try {
+            const mainRef = await this.api.rest.git.getRef({...this.repoSetting, ref:'heads/main'});
+            const mainRefSha = mainRef.data.object.sha
+            return mainRefSha
+        } catch (e) {
+            return null
+        }
+    }
+
     createBranch = async (branchName)=>{
         // const mainRef = await this.api.rest.git.getRef({...this.repoSetting, ref:'heads/main'});
         // const mainRefSha = mainRef.data.object.sha
