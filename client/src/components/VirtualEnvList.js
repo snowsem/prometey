@@ -1,16 +1,8 @@
 import {Component} from "react";
-import {Button, PageHeader, Table, Tag} from "antd";
+import {Button, PageHeader, Table, Tag, Progress} from "antd";
 import {Modal} from "antd/es/modal/Modal";
 import {
-    CheckCircleOutlined,
-    SyncOutlined,
-    CloseCircleOutlined,
-    ExclamationCircleOutlined,
     ReloadOutlined,
-    ClockCircleOutlined,
-    MinusCircleOutlined,
-    UserOutlined,
-    FieldTimeOutlined
 } from '@ant-design/icons';
 
 
@@ -18,11 +10,11 @@ import {
 const issueStatusComponent = (status) => {
     let result;
     switch (status) {
-        case 'pending': result = <Tag  icon={<FieldTimeOutlined />} color="default">{status}</Tag>; break;
-        case 'ready': result = <Tag icon={<CheckCircleOutlined />} color="success">{status}</Tag>; break;
-        case 2: result = <Tag icon={<ClockCircleOutlined />} color="processing">{status}</Tag>; break;
+        case 'pending': result = <Progress width={40} type="circle" percent={0} />; break;
+        case 'ready': result = <Progress width={40} type="circle" percent={100} />; break;
+        case 2: result = <Progress width={40} type="circle" percent={20} />; break;
         default:
-            result = <Tag icon={<MinusCircleOutlined />} color="default">{status}</Tag>;
+            result = <Progress width={40} type="circle" percent={100} status="exception" />;
     }
 
     return result;
