@@ -14,6 +14,12 @@ import {
 import {VirtualEnvService} from "./VirtualEnvService";
 import {JoinTable} from "typeorm/browser";
 
+export enum VirtualEnvStatus {
+    PENDING = "pending",
+    WAIT_PR = "wait_pr",
+    READY = "ready"
+}
+
 @Entity()
 export class VirtualEnv extends BaseEntity{
     @PrimaryGeneratedColumn({
@@ -51,4 +57,11 @@ export class VirtualEnv extends BaseEntity{
     })
     virtualEnvServices: VirtualEnvService[];
 
+    @Column({
+        type: "enum",
+        enum: VirtualEnvStatus,
+        default: VirtualEnvStatus.PENDING
+    })
+    status: VirtualEnvStatus;
 }
+

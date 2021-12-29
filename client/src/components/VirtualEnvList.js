@@ -1,9 +1,32 @@
 import {Component} from "react";
-import {Button, PageHeader, Table} from "antd";
+import {Button, PageHeader, Table, Tag} from "antd";
 import {Modal} from "antd/es/modal/Modal";
+import {
+    CheckCircleOutlined,
+    SyncOutlined,
+    CloseCircleOutlined,
+    ExclamationCircleOutlined,
+    ReloadOutlined,
+    ClockCircleOutlined,
+    MinusCircleOutlined,
+    UserOutlined,
+    FieldTimeOutlined
+} from '@ant-design/icons';
 
-function ReloadOutlined() {
-    return null;
+
+
+const issueStatusComponent = (status) => {
+    let result;
+    switch (status) {
+        case 'pending': result = <Tag  icon={<FieldTimeOutlined />} color="default">{status}</Tag>; break;
+        case 'ready': result = <Tag icon={<CheckCircleOutlined />} color="success">{status}</Tag>; break;
+        case 2: result = <Tag icon={<ClockCircleOutlined />} color="processing">{status}</Tag>; break;
+        default:
+            result = <Tag icon={<MinusCircleOutlined />} color="default">{status}</Tag>;
+    }
+
+    return result;
+
 }
 
 
@@ -14,6 +37,23 @@ export class VirtualEnvList extends Component{
                 title: 'Title',
                 dataIndex: 'title',
                 key: 'title',
+            },
+            {
+                title: 'Status',
+                dataIndex: 'status',
+                key: 'status',
+                render(text, record) {
+
+                    return {
+                        props: {
+                            style: {
+                                // background: '#fefefe',
+                                // borderRightWidth: 2
+                            }
+                        },
+                        children: <div>{issueStatusComponent(record.status)}</div>
+                    };
+                },
             },
             {
                 title: 'Created at',
