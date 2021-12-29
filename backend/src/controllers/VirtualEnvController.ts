@@ -46,7 +46,7 @@ class VirtualEnvController {
     async create(req: Request, res: Response, next) {
         try {
             const microInfraService = new MicroInfraService(process.env.GITHUB_API_TOKEN);
-            const services = await microInfraService.getAllServices()
+            const services = await microInfraService.getAllServices();
 
             console.log('availableServices')
             const rules = {
@@ -65,19 +65,19 @@ class VirtualEnvController {
             virtualEnv.title = req.body.title;
             virtualEnv.description = req.body.description;
             virtualEnv.owner = req.body.owner;
+            const githubTagByServiceName = req.body?.githubTagByServiceName;
 
-
-            let availableServices = []
-            services.forEach(item=>{
+            let availableServices = [];
+            services.forEach(serviceName=>{
                 availableServices.push(VirtualEnvService.create({
-                    service_name: item,
-                    service_header: microInfraService.createServiceHeader(item),
-                    service_header_value: virtualEnv.title
-
+                    service_name: serviceName,
+                    service_header: microInfraService.createServiceHeader(serviceName),
+                    service_header_value: virtualEnv.title,
+                    service_github_tag: githubTagByServiceName?.[serviceName]
                 }))
             });
 
-            virtualEnv.virtualEnvServices = availableServices
+            virtualEnv.virtualEnvServices = availableServices;
 
             const result = await virtualEnvRepository.save(virtualEnv);
             return  res.json({ code: 'ok', data: result });
@@ -87,7 +87,7 @@ class VirtualEnvController {
     }
 
     async show(req: Request, res: Response) {
-        const virtualEnvRepository = getRepository(VirtualEnv)
+        const virtualEnvRepository = getRepository(VirtualEnv);
         const virtualEnv = await virtualEnvRepository.findOne({
             where: {id:req.params.id},
             relations: ['virtualEnvServices'],
@@ -102,7 +102,7 @@ class VirtualEnvController {
     }
 
     async delete(req: Request, res: Response, next) {
-        const virtualEnvRepository = getRepository(VirtualEnv)
+        const virtualEnvRepository = getRepository(VirtualEnv);
         try {
             await virtualEnvRepository.delete({
                 id: req.params.id

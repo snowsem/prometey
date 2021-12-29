@@ -1,71 +1,101 @@
-import {Component} from "react";
+import React from "react";
 import Modal from "antd/es/modal/Modal";
-import {Input, notification} from "antd";
+import {Input, Layout, notification, Spin} from "antd";
+import ServicesForm from "./ServicesForm";
 
-export class CreateVirtualEnvModal extends Component {
+export function CreateVirtualEnvModal(props) {
+    const { closeModal, applyCreateModal, visible } = props;
 
-    constructor() {
-        super();
-        this.state = {
-            name: null
+    const [name, setName] = React.useState(null);
+    const [isLoading, setLoading] = React.useState(null);
+    const [availableServiceNames, setServiceNames] = React.useState([]);
+
+    const onChangeName = (e)=>{
+        setName(e.target.value);
+    };
+
+    React.useEffect(() => {
+        if (!visible) return;
+
+        setLoading(true);
+            const url = 'http://localhost:8888/get_services';
+            fetch(url, {
+                method: 'GET',
+            }).then((response) => {
+                if (response.status < 400) {
+                    response.json().then((json) => {
+                        setServiceNames(json?.data ?? []);
+                    }).finally(() => setLoading(false))
+                }
+            });
+    }, [visible]);
+
+    React.useEffect(() => {
+        if (visible) {
+            setName(null);
         }
-    }
-    onChangeName = (e)=>{
-        this.setState((state)=>{
-            return {...state, name: e.target.value}
-        });
-    }
-    componentDidMount() {
-        console.log('mount')
-        this.setState((state)=>{
-            return {...state, name: null}
-        });
-    }
+    }, [visible]);
 
-    onCloseHandler = ()=>{
-        this.setState((state)=>{
-            return {...state, name: null}
-        });
-        this.props.closeModal()
-    }
+    const onCloseHandler = ()=>{
+        closeModal();
+    };
 
-    onOkHandler = async () => {
-        this.setState((state)=>{
-            return {...state, name: null}
-        });
+    const onOkHandler = async (values) => {
         const url = 'http://localhost:8888/virtual_env';
+        const githubTagByServiceName = Object.entries(values).reduce((acc, [serviceName, tag]) => {
+            acc[serviceName] = tag;
+            return acc;
+        }, {});
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title: this.state.name }),
+            body: JSON.stringify({
+                title: name,
+                githubTagByServiceName,
+            }),
         });
         const json = await response.json();
         if (response.status <= 400) {
-            this.props.applyCreateModal(json.data);
+            applyCreateModal(json.data);
+            closeModal();
         } else {
             notification.error({
                 message: 'Oops',
                 description: json?.errors?.[0]?.title ?? 'Something went wrong. Try again later',
             });
         }
-        this.props.closeModal()
     }
 
-    render() {
-        return (
-            <div>
-                <Modal title="Create Env" visible={this.props.visible} onOk={this.onOkHandler} onCancel={this.onCloseHandler}>
-                    <p><Input
-                        placeholder="Enter env name"
-                        value={this.state.name}
-                        onChange={this.onChangeName}
-                    /></p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                </Modal>
-            </div>
-        );
-    }
+    return (
+        <div>
+            <Modal
+                okButtonProps={{form:'create-tags-form', key: 'submit', htmlType: 'submit'}}
+                title="Create Env"
+                visible={visible}
+                onCancel={onCloseHandler}
+                confirmLoading={!!isLoading}
+            >
+                {isLoading ? (<Spin/>) : (
+                    <>
+                        <p>
+                            <Input
+                                placeholder="Enter env name"
+                                value={name}
+                                onChange={onChangeName}
+                            />
+                        </p>
+                        <Layout style={{ backgroundColor: "#fff" }}>
+                            <ServicesForm
+                                id="create-tags-form"
+                                virtualEnvServices={availableServiceNames.map((serviceName) => ({ id: serviceName, service_name: serviceName }))}
+                                onFinish={onOkHandler}
+                                initialValues={{}}
+                            />
+                        </Layout>
+                    </> )}
+            </Modal>
+        </div>
+    );
 }
