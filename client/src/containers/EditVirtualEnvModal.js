@@ -20,12 +20,6 @@ function RowWithCopy({ text, hovered }) {
                     opacity: hovered ? 1 : 0,
                 }}
                 type="link"
-                onClick={() => {
-                    copy(text);
-                    notification.success({
-                        message: 'Text copied',
-                    });
-                }}
             >
                 <CopyOutlined/>
             </Button>
@@ -71,6 +65,7 @@ export function EditVirtualEnvModal(props) {
             title: 'Service',
             dataIndex: 'service_name',
             key: 'service_name',
+            style: {cursor: "pointer"},
         },
         {
             title: 'Tag',
@@ -89,24 +84,38 @@ export function EditVirtualEnvModal(props) {
             title: 'Header name',
             dataIndex: 'service_header',
             key: 'service_header',
+            className: 'pointer',
             render: (text, record) => (
                 <RowWithCopy text={text} record={record} hovered={serviceNameHovered === record.id} />
             ),
             onCell: (record) => ({
                 onMouseEnter: () => setServiceNameHovered(record.id),
                 onMouseLeave: () => setServiceNameHovered(null),
+                onClick: () => {
+                    copy(record.service_header_value);
+                    notification.success({
+                        message: 'Header name copied',
+                    });
+                }
             })
         },
         {
             title: 'Header value',
             dataIndex: 'service_header_value',
             key: 'service_header_value',
+            className: 'pointer',
             render: (text, record) => (
                 <RowWithCopy text={text} record={record} hovered={serviceValueHovered === record.id} />
             ),
             onCell: (record) => ({
                 onMouseEnter: () => setServiceValueHovered(record.id),
                 onMouseLeave: () => setServiceValueHovered(null),
+                onClick: () => {
+                    copy(record.service_header_value);
+                    notification.success({
+                        message: 'Header value copied',
+                    });
+                }
             })
         },
     ];
