@@ -6,6 +6,7 @@ import {MicroInfraService} from "../services/MicroInfraService";
 import {VirtualEnvService} from "../entity/VirtualEnvService";
 import {_} from 'lodash'
 import createHttpError from 'http-errors';
+import wsClient from "../wsClient";
 
 export interface IVirtualEnvPayload {
     title: string;
@@ -148,6 +149,7 @@ class VirtualEnvController {
                 }
             });
 
+            wsClient.send({ id: virtualEnv.id, data:virtualEnv });
             console.log(virtualEnv.virtualEnvServices, req.body.virtualEnvServices)
             //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
 
