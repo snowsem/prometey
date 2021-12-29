@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import {createConnection, getRepository} from "typeorm";
 import {AppLogger} from "../logger";
 import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
+import wsClient from '../wsClient';
 
 export const createBranch = async ()=>{
     const infraService = new MicroInfraService();
@@ -74,6 +75,7 @@ export const createBranch = async ()=>{
             const vp = await Promise.all(valuesMap)
             env.status = VirtualEnvStatus.READY;
             await env.save();
+            wsClient.send({ id: env.id, data:env });
         });
     }
 
