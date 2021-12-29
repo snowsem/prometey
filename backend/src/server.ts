@@ -1,17 +1,27 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import { createConnection } from 'typeorm';
+import http from 'http';
 import bodyParser from "body-parser";
 import router from './router';
 import passport from 'passport'
 import cors from 'cors'
 import errorsMiddleware from './errorHandler';
+import wsClient from './wsClient';
 
 dotenv.config();
 
 async function startServer() {
-    const app = express();
     await createConnection();
+    const app = express();
+    const server = http.createServer(app);
+
+    // const webSocketServer = new WebSocket.Server({ server });
+    wsClient.init(server);
+
+    wsClient.on('connection', (ws) => {
+        // do some stuff
+    });
 
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
@@ -21,7 +31,7 @@ async function startServer() {
     app.use(router);
     app.use(errorsMiddleware);
     dotenv.config();
-    app.listen(port, () => {
+    server.listen(port, () => {
         console.log(`server started at http://localhost:${port}`);
     });
 }
