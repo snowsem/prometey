@@ -261,6 +261,7 @@ export class MicroInfraService {
                 }
             })
         } catch (e) {
+            console.log('getValues', e)
             return null
         }
 

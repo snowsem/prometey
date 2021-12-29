@@ -9,6 +9,7 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
+    "cron": "node ./dist/cron/cron.js",
     "build:watch": "tsc -w",
     "pm2-dev": "pm2-runtime start pm2.local.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import {createConnection, getRepository} from "typeorm";
 import {AppLogger} from "../logger";
 import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
-import wsClient  from '../wsClient';
+//import wsClient  from '../wsClient';
 
 export const createBranch = async ()=>{
 
@@ -22,8 +22,7 @@ export const createBranch = async ()=>{
         }
     )
 
-    if (envs) {
-
+    if (envs.length>0) {
         const a = await infraService.deleteBranch('semen-branch')
         const b = await infraService.createBranch('semen-branch');
 
@@ -66,31 +65,11 @@ export const createBranch = async ()=>{
             const vp = await Promise.all(valuesMap)
             env.status = VirtualEnvStatus.READY;
             await env.save();
-            wsClient.send({ id: env.id, data:env });
+            //wsClient.send({ id: env.id, data:env });
         });
     }
 
 }
 
 
-dotenv.config();
 
-
-( async ()=>{
-    try {
-        await createConnection();
-        await createBranch();
-
-    } catch (e) {
-        if (e.status === 422) {
-            return null;
-        } else {
-            AppLogger.log({
-                level: 'error',
-                message: `Error ${e}`
-            });
-            throw Error(e);
-        }
-    }
-
-})();
