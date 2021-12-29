@@ -1,13 +1,17 @@
 import WebSocket from 'ws';
 
-class wsClient {
+class WsClient {
     private wsServer;
+    private static instance: WsClient;
 
     constructor(server) {
-        if (!server) {
-            return;
+        if (WsClient.instance) {
+            return WsClient.instance;
         }
-        this.wsServer = new WebSocket.Server({ server });
+        if (server) {
+            this.wsServer = new WebSocket.Server({ server });
+        }
+        WsClient.instance = this;
     }
 
     init(server) {
@@ -31,6 +35,6 @@ class wsClient {
     }
 }
 
-const wsClientInstance = new wsClient(null);
+const wsClientInstance = new WsClient(null);
 
 export default wsClientInstance;

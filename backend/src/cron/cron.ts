@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import {createConnection} from "typeorm";
 
 dotenv.config();
 import cron from 'node-cron';
@@ -7,9 +6,8 @@ import {AppLogger} from "../logger";
 import {importAllServices} from "./importAllServices";
 import {createBranch} from "./createBranch";
 
-( async ()=>{
+const cronApp = async ()=>{
     try {
-        await createConnection();
         //*/10 * * * * will run every 10 min.
         //*/10 * * * * * will run every 10 sec.
         const importServices = cron.schedule('1 * * * *', async () =>  {
@@ -37,4 +35,6 @@ import {createBranch} from "./createBranch";
         throw Error(e);
     }
 
-})();
+}
+
+export default cronApp;
