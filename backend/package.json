@@ -21,6 +21,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mysql": "^2.18.1",
+    "nodejs-base64": "^2.0.0",
     "passport": "^0.5.2",
     "pg": "^8.7.1",
     "qs": "^6.10.1",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^16.10.9",
+    "bull": "^4.2.0",
     "crypto": "^1.0.1",
     "dotenv": "^10.0.0",
     "fastest-validator": "^1.12.0",

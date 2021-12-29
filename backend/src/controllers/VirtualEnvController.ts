@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { getRepository} from "typeorm";
-import {VirtualEnv} from "../entity/VirtualEnv";
+import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
 import {validate} from "../validators";
 import {MicroInfraService} from "../services/MicroInfraService";
 import {VirtualEnvService} from "../entity/VirtualEnvService";
@@ -139,6 +139,7 @@ class VirtualEnvController {
             }
 
             virtualEnv.title = req.body.title || virtualEnv.title
+            virtualEnv.status = VirtualEnvStatus.WAIT_PR
             virtualEnv.virtualEnvServices.map(item => {
                 const newValue = _.find(req.body.virtualEnvServices, ['id', item.id])
                 if (newValue) {

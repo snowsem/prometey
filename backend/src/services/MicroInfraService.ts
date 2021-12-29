@@ -1,6 +1,7 @@
 import {Octokit} from 'octokit';
-const YAML = require('yaml')
+import {stringify as yamlStr, parse as parseYaml}  from 'yaml';
 import crypto from 'crypto';
+import {throws} from "assert";
 
 export class MicroInfraService {
 
@@ -16,13 +17,14 @@ export class MicroInfraService {
             owner: "airslateinc",
             repo: "airslate-microservices-infra",
             path: "api",
-            ref: "prometey-test-1"
+            ref: "prometey-test-1",
+            mainBranch: 'main'
         }
     }
 
-    getAllServices = async ()=>{
+    getAllServices = async (branch = this.repoSetting.mainBranch)=>{
         try {
-            const { data } = await this.api.rest.repos.getContent(this.repoSetting);
+            const { data } = await this.api.rest.repos.getContent({...this.repoSetting, ref:branch});
             const services = data.map(item=>item.name)
 
             return services;
@@ -45,7 +47,7 @@ export class MicroInfraService {
     getServiceValue = async (serviceName)=>{
         try {
             const { data } = await this.api.rest.repos.getContent({...this.repoSetting, path: `api/${serviceName}/stage/values.yaml`});
-            return YAML.parse(data).global;
+            return parseYaml(data).global;
         } catch (e) {
             if (e.status === 404) {
                 return null
@@ -54,17 +56,105 @@ export class MicroInfraService {
         }
     }
 
+    getBranch = async (branchName)=>{
+        try {
+            const ref = await this.api.rest.git.getRef({...this.repoSetting, ref:`heads/${branchName}`});
+            return ref
+        } catch (e) {
+            throw e
+        }
+
+    }
+
     getMainBranchSha = async ()=>{
         try {
-            const mainRef = await this.api.rest.git.getRef({...this.repoSetting, ref:'heads/main'});
+            const mainRef = await this.getBranch(this.repoSetting.mainBranch);
             const mainRefSha = mainRef.data.object.sha
             return mainRefSha
         } catch (e) {
             return null
         }
     }
+    createBranch = async (branchName, )=>{
+        try {
+            const mainRefSha = await this.getMainBranchSha()
+            const newBranch = await this.api.rest.git.createRef(
+                {...this.repoSetting, ref:`refs/heads/${branchName}`, sha: mainRefSha}
+            )
+            return newBranch
+        } catch (e) {
+            throw e
+        }
+    }
 
-    createBranch = async (branchName)=>{
+    deleteBranch = async (branchName)=>{
+        try {
+            const newBranch = await this.api.rest.git.deleteRef(
+                {...this.repoSetting, ref:`heads/${branchName}`}
+            )
+            return true
+        } catch (e) {
+            if (e.status === 422){
+                return true;
+            }
+            else {
+                throw e
+            }
+        }
+    }
+
+    createOrUpdateFileInBranch = async (content, filePath, branch, message)=>{
+        try {
+            const fileSha =await this.getFileSha(filePath, branch)
+            const file = await this.api.rest.repos.createOrUpdateFileContents({
+                owner: this.repoSetting.owner,
+                repo: this.repoSetting.repo,
+                path: filePath,
+                message:message,
+                sha: fileSha,
+                content:content,
+                branch: branch,
+                "committer.name":'snowsem',
+                "committer.email":'snowsem@rambler.ru',
+                "author.name":'snowsem',
+                "author.email":'snowsem@rambler.ru'
+            });
+
+            return file
+        } catch (e) {
+            throw e
+        }
+
+    }
+
+    deleteFileInBranch = async (filePath, branch, message)=>{
+        try {
+            const fileSha =await this.getFileSha(filePath, branch)
+            const file = await this.api.rest.repos.deleteFile({
+                owner: this.repoSetting.owner,
+                repo: this.repoSetting.repo,
+                path: filePath,
+                message:message,
+                sha: fileSha,
+                branch: branch,
+                "committer.name":'snowsem',
+                "committer.email":'snowsem@rambler.ru',
+                "author.name":'snowsem',
+                "author.email":'snowsem@rambler.ru'
+            });
+
+            return file
+        } catch (e) {
+            if (e.status === 404){
+                return null
+            } else {
+                throw e
+            }
+        }
+
+    }
+
+    // createBranch = async (branchName)=>{
         // const mainRef = await this.api.rest.git.getRef({...this.repoSetting, ref:'heads/main'});
         // const mainRefSha = mainRef.data.object.sha
         // const newBranch = await this.api.rest.git.createRef(
@@ -105,7 +195,7 @@ export class MicroInfraService {
 
 
 
-    }
+    // }
 
     getServiceTags = async (serviceName)=>{
         try {
@@ -148,6 +238,55 @@ export class MicroInfraService {
             callback();
         }, 500)
     }
+
+    getValues = async (branch = this.repoSetting.mainBranch)=>{
+        try {
+            const services = await this.getAllServices(branch);
+            const map = await services.map(srv=>{
+                return this.api.rest.repos.getContent({...this.repoSetting, ref:branch, path: `api/${srv}/stage`})
+            })
+
+            const mapResolve = await Promise.all(map);
+            return services.map((srv, i)=>{
+                let v = []
+                mapResolve[i].data.forEach(item=>{
+                    const str = item.name;
+                    if (str.includes('values-')) {
+                        v.push(item.name)
+                    }
+                })
+                return {
+                    serviceName: srv,
+                    values: v
+                }
+            })
+        } catch (e) {
+            return null
+        }
+
+
+    }
+
+    // getTree = async ()=>{
+    //     const { data } = await this.api.rest.repos.getContent({...this.repoSetting, path: ``});
+    //     const api = data.filter(item=>{
+    //         if (item.name === 'api/addons') {
+    //             return true
+    //         }
+    //     })
+    //     try {
+    //         const a = await this.api.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}?recursive=true', {
+    //             owner: this.repoSetting.owner,
+    //             repo: this.repoSetting.repo,
+    //             tree_sha: api.sha
+    //         })
+    //         console.log(a.data.tree)
+    //
+    //     } catch (e) {
+    //         console.log(e)
+    //     }
+    //
+    // }
 
 }
 
