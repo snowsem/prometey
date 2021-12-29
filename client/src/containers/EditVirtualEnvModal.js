@@ -4,12 +4,9 @@ import {Input, notification, Table, Button} from "antd";
 import { CopyOutlined } from '@ant-design/icons';
 import copy from 'copy-to-clipboard';
 
-function RowWithCopy({ text, record }) {
-    const [hovered, setHovered] = React.useState(false);
+function RowWithCopy({ text, hovered }) {
     return (
         <div
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
             style={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -39,6 +36,8 @@ function RowWithCopy({ text, record }) {
 export function EditVirtualEnvModal(props) {
     const { closeModalHandler, data, visible } = props;
     const [githubTagsByServiceId, setGithubTags] = React.useState({});
+    const [serviceNameHovered, setServiceNameHovered] = React.useState(null);
+    const [serviceValueHovered, setServiceValueHovered] = React.useState(null);
 
     const onOkHandler = async () => {
         const payload = Object.entries(githubTagsByServiceId).map(([id, service_github_tag]) => ({ id, service_github_tag }));
@@ -91,16 +90,24 @@ export function EditVirtualEnvModal(props) {
             dataIndex: 'service_header',
             key: 'service_header',
             render: (text, record) => (
-                <RowWithCopy text={text} record={record} />
+                <RowWithCopy text={text} record={record} hovered={serviceNameHovered === record.id} />
             ),
+            onCell: (record) => ({
+                onMouseEnter: () => setServiceNameHovered(record.id),
+                onMouseLeave: () => setServiceNameHovered(null),
+            })
         },
         {
             title: 'Header value',
             dataIndex: 'service_header_value',
             key: 'service_header_value',
             render: (text, record) => (
-                <RowWithCopy text={text} record={record} />
+                <RowWithCopy text={text} record={record} hovered={serviceValueHovered === record.id} />
             ),
+            onCell: (record) => ({
+                onMouseEnter: () => setServiceValueHovered(record.id),
+                onMouseLeave: () => setServiceValueHovered(null),
+            })
         },
     ];
 
