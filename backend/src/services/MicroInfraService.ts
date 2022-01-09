@@ -7,6 +7,8 @@ export class MicroInfraService {
 
     private api: any ;
     private repoSetting: any;
+    private repoData: any;
+    private repoTree: any;
 
     constructor(accessToken = process.env.GITHUB_API_TOKEN) {
         this.api = new Octokit({ auth: `${accessToken}` });
@@ -264,8 +266,16 @@ export class MicroInfraService {
             console.log('getValues', e)
             return null
         }
+    }
 
+     getRepo = async (branch)=>{
+        const r = await this.api.rest.repos.downloadZipballArchive({
+            owner: this.repoSetting.owner,
+            repo: this.repoSetting.repo,
+            ref: branch,
+        });
 
+        return r
     }
 
     // getTree = async ()=>{

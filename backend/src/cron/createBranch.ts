@@ -10,7 +10,6 @@ import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
 export const createBranch = async ()=>{
 
     const infraService = new MicroInfraService();
-     const values = await infraService.getValues('semen-branch')
 
     const envs = await getRepository(VirtualEnv).find(
         {
@@ -23,6 +22,7 @@ export const createBranch = async ()=>{
     )
 
     if (envs.length>0) {
+        const values = await infraService.getValues('semen-branch')
         const a = await infraService.deleteBranch('semen-branch')
         const b = await infraService.createBranch('semen-branch');
 
