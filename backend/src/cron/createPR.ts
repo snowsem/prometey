@@ -1,16 +1,10 @@
 // import wsClient from '../wsClient';
 import dotenv from 'dotenv';
-import {createConnection} from "typeorm";
-import WebSocket from 'ws';
-dotenv.config();
 import {AppLogger} from "../logger";
+import {MessageTypes, WsClient} from "../ws/client";
 
-import {MicroInfraService} from "../services/MicroInfraService";
+dotenv.config();
 var AdmZip = require("adm-zip");
-import {AdmZip} from 'adm-zip'
-import {MicroInfraRepoService} from "../services/MicroInfraRepoService";
-import {importAllServices} from "./importAllServices";
-import {WsClient} from "../ws/client";
 ( async ()=>{
     try {
        //  await createConnection();
@@ -89,7 +83,12 @@ import {WsClient} from "../ws/client";
         // });
 
         const ws = new WsClient();
-        ws.send('gi')
+        ws.send({
+            data: {
+                msg: 'hello'
+            },
+            type: MessageTypes.data
+        })
 
     } catch (e) {
         AppLogger.log({

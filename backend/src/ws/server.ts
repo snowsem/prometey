@@ -21,9 +21,10 @@ class WsServer {
         this.wsServer.on('connection', (ws, request, client) => {
             console.log('client connected');
             ws.send('hello client')
-            ws.on('message', m => {
-                console.log('client say:', m)
-                this.wsServer.clients.forEach(client => client.send(m));
+
+            ws.on('message', (data, isBinary) => {
+                console.log('client say:', data)
+                this.wsServer.clients.forEach(client => client.send(data, { binary: isBinary }));
             });
         });
 
