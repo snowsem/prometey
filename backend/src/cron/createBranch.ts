@@ -1,18 +1,18 @@
 import {MicroInfraService} from "../services/MicroInfraService";
 import {stringify as yamlStr} from 'yaml';
 import {base64encode} from 'nodejs-base64';
-import dotenv from 'dotenv';
 import {createConnection, getRepository} from "typeorm";
-import {AppLogger} from "../logger";
 import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
 import {MicroInfraRepoService} from "../services/MicroInfraRepoService";
+import {MessageTypes, WsClient} from "../ws/client";
 //import wsClient  from '../wsClient';
 
 export const createBranch = async ()=>{
 
+    const wsClient = new WsClient();
     const infraService = new MicroInfraService();
     const repoService = new MicroInfraRepoService()
-    await repoService.getRepo('semen-branch')
+    await repoService.getRepo('custom-main')
 
     const envs = await getRepository(VirtualEnv).find(
         {
@@ -25,9 +25,10 @@ export const createBranch = async ()=>{
     )
 
     if (envs.length>0) {
+        const newBranch = `venv-autosyc-${Date.now().toString()}`
         const values = await repoService.getAllValues()
-        const a = await infraService.deleteBranch('semen-branch')
-        const b = await infraService.createBranch('semen-branch');
+        //const a = await infraService.deleteBranch('semen-branch')
+        const b = await infraService.createBranch(newBranch);
 
         envs.map( async (env)=>{
             const valuesMap = env.virtualEnvServices.map( async (srv)=>{
@@ -45,7 +46,7 @@ export const createBranch = async ()=>{
                     return infraService.createOrUpdateFileInBranch(
                         base64encode(value),
                         `api/${srv.service_name}/stage/values-${env.title}.yaml`,
-                        'semen-branch',
+                        newBranch,
                         `Sync Virtual env: ${env.title}`
                     )
                 } else {
@@ -60,7 +61,7 @@ export const createBranch = async ()=>{
                         }
                     })
                     if (removeFilePath) {
-                        const remove = await infraService.deleteFileInBranch(removeFilePath, 'semen-branch','Delete file')
+                        const remove = await infraService.deleteFileInBranch(removeFilePath, newBranch,'Delete file')
                     }
 
                 }
@@ -68,10 +69,12 @@ export const createBranch = async ()=>{
             const vp = await Promise.all(valuesMap)
             env.status = VirtualEnvStatus.READY;
             await env.save();
-            //wsClient.send({ id: env.id, data:env });
+            await wsClient.sendMessage({
+                data: env,
+                type: MessageTypes.updateVirtualEnv
+            })
         });
     }
-
 }
 
 

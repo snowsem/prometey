@@ -5,9 +5,12 @@ import cron from 'node-cron';
 import {AppLogger} from "../logger";
 import {importAllServices} from "./importAllServices";
 import {createBranch} from "./createBranch";
+import {createConnection} from "typeorm";
+
 
 const cronApp = async ()=>{
     try {
+        await createConnection();
         //*/10 * * * * will run every 10 min.
         //*/10 * * * * * will run every 10 sec.
         const importServices = cron.schedule('1 * * * *', async () =>  {
@@ -36,5 +39,5 @@ const cronApp = async ()=>{
     }
 
 }
-
+cronApp()
 export default cronApp;

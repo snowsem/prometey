@@ -5,8 +5,13 @@ import {CreateVirtualEnvModal} from "../components/CreateVirtualEnvModal";
 import {EditVirtualEnvModal} from "./EditVirtualEnvModal";
 import {ConformModal} from "../components/ConformModal";
 import { notification } from 'antd';
+import {setWsHeartbeat} from "ws-heartbeat/client";
 
 const ws = new WebSocket('ws://localhost:8888')
+setWsHeartbeat(ws, '{"kind":"ping"}', {
+    pingTimeout: 6000, // in 60 seconds, if no message accepted from server, close the connection.
+    pingInterval: 2000, // every 25 seconds, send a ping message to the server.
+});
 
 export class VirtualEnvContainer extends Component {
     constructor() {
@@ -79,12 +84,41 @@ export class VirtualEnvContainer extends Component {
         await this.getAllVirtualEnv(offset, limit, params);
     };
 
+    handleWsUpdateVirtualEnv(data) {
+        console.log(this.state.virtualEnv.data)
+        if (this.state.virtualEnv?.data === undefined) return;
+        const newState = this.state.virtualEnv.data.map(venv=>{
+            if (venv.id === data.id) {
+                return data
+            } else {
+                return venv
+            }
+        })
+
+        this.setState({ virtualEnv: {
+                ...this.state.virtualEnv,
+                data: [...newState]
+            },
+        });
+
+
+    }
+
+
     componentDidMount() {
+        ws.onclose = ev => {
+            notification.error({
+                message: 'WS CLIENT',
+                description: 'Disconnected',
+            });
+        }
         ws.onmessage = evt => {
             // listen to the messages
             const message = JSON.parse(evt.data);
-            console.log(JSON.parse(evt.data))
-            // do something
+            if (message.type === 'updateVirtualEnv'){
+                this.handleWsUpdateVirtualEnv(message.data)
+                //console.log(JSON.parse(evt.data))
+            }
         }
         setTimeout(async ()=>{
             await this.getAllVirtualEnv()

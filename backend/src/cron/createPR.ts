@@ -83,7 +83,7 @@ var AdmZip = require("adm-zip");
         // });
 
         const ws = new WsClient();
-        ws.send({
+        ws.sendMessage({
             data: {
                 msg: 'hello'
             },
