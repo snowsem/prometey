@@ -6,6 +6,7 @@ import {MicroInfraService} from "../services/MicroInfraService";
 import {VirtualEnvService} from "../entity/VirtualEnvService";
 import {_} from 'lodash'
 import createHttpError from 'http-errors';
+import {MessageTypes, WsClient} from "../ws/client";
 
 
 export interface IVirtualEnvPayload {
@@ -154,6 +155,12 @@ class VirtualEnvController {
             //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
 
             const result = await virtualEnvRepository.save(virtualEnv);
+            const ws = new WsClient();
+            await ws.sendMessage({
+                data: virtualEnv,
+                type: MessageTypes.updateVirtualEnv
+            })
+            ws.close();
             return res.json({code: 'ok', data: result});
         } catch(e) {
             next(e);
