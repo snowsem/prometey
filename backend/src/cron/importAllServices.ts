@@ -1,13 +1,14 @@
 import {getRepository} from "typeorm";
-import {MicroInfraService} from "../services/MicroInfraService";
 import {MicroInfraService as MicroInfraServiceEntity} from "../entity/MicroInfraService";
+import {MicroInfraRepoService} from "../services/MicroInfraRepoService";
 
 export const importAllServices = async ()=>{
-    const infraService = new MicroInfraService();
-    const gitServices = await infraService.getAllServices();
+    const infraRepoService = new MicroInfraRepoService();
+    await infraRepoService.getRepo('prometey-test-1');
+    const gitServices = await infraRepoService.getAllServices();
 
     const valuesMap = gitServices.map((srv)=>{
-        return infraService.getServiceValue(srv)
+        return infraRepoService.getServiceDefaultValue(srv)
     })
 
     let values = await Promise.all(valuesMap);
@@ -23,6 +24,4 @@ export const importAllServices = async ()=>{
 
     const result = await microInfraServiceRepository.save(serviceValues)
     return result;
-
-
 }

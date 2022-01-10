@@ -7,7 +7,7 @@ import router from './router';
 import passport from 'passport'
 import cors from 'cors'
 import errorsMiddleware from './errorHandler';
-import wsClient from './wsClient';
+import WsServer from './ws/server';
 import cronApp from './cron/cron';
 
 dotenv.config();
@@ -16,14 +16,7 @@ async function startServer() {
     await createConnection();
     const app = express();
     const server = http.createServer(app);
-
-    wsClient.init(server);
-
-    wsClient.on('connection', (ws) => {
-        console.log('connected');
-        wsClient.send('test');
-    });
-
+    WsServer.init(server);
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
     app.use(cors());
@@ -33,9 +26,9 @@ async function startServer() {
     app.use(errorsMiddleware);
     dotenv.config();
     server.listen(port, () => {
-        console.log(`server started at http://localhost:${port}`);
+        console.log(`web server started at http://localhost:${port}`);
     });
-    await cronApp();
+    //await cronApp();
 }
 
 

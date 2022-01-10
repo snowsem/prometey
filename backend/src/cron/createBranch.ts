@@ -5,11 +5,14 @@ import dotenv from 'dotenv';
 import {createConnection, getRepository} from "typeorm";
 import {AppLogger} from "../logger";
 import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
+import {MicroInfraRepoService} from "../services/MicroInfraRepoService";
 //import wsClient  from '../wsClient';
 
 export const createBranch = async ()=>{
 
     const infraService = new MicroInfraService();
+    const repoService = new MicroInfraRepoService()
+    await repoService.getRepo('semen-branch')
 
     const envs = await getRepository(VirtualEnv).find(
         {
@@ -22,7 +25,7 @@ export const createBranch = async ()=>{
     )
 
     if (envs.length>0) {
-        const values = await infraService.getValues('semen-branch')
+        const values = await repoService.getAllValues()
         const a = await infraService.deleteBranch('semen-branch')
         const b = await infraService.createBranch('semen-branch');
 
@@ -32,7 +35,7 @@ export const createBranch = async ()=>{
                 //console.log(srv)
                 if (srv.service_github_tag) {
 
-                    let value = await infraService.getServiceValue(srv.service_name)
+                    let value = await repoService.getServiceDefaultValue(srv.service_name)
                     value.image.tag = srv.service_github_tag
                     value.deployment_variant = env.title
                     value = yamlStr({

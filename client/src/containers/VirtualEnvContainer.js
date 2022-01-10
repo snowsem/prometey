@@ -83,6 +83,7 @@ export class VirtualEnvContainer extends Component {
         ws.onmessage = evt => {
             // listen to the messages
             const message = JSON.parse(evt.data);
+            console.log(JSON.parse(evt.data))
             // do something
         }
         setTimeout(async ()=>{
