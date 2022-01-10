@@ -89,6 +89,7 @@ var AdmZip = require("adm-zip");
             },
             type: MessageTypes.data
         })
+        ws.close();
 
     } catch (e) {
         AppLogger.log({

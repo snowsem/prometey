@@ -25,7 +25,7 @@ class WsServer {
                 console.log('pong server', data)
                 ws.send('{"kind":"pong"}', {binary: false})
             }
-        });
+        },  4000);
 
         this.wsServer.on('connection', (ws, request, client) => {
             console.log('client connected');
