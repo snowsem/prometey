@@ -19,13 +19,13 @@ class WsServer {
     init(server) {
         this.wsServer = new WebSocket.Server({ server });
 
-        setWsHeartbeat(this.wsServer, (ws, data, binary) => {
-            console.log('pong server', data.toString())
-            if (data.toString() === '{"kind":"ping"}') { // send pong if recieved a ping.
-                console.log('pong server', data)
-                ws.send('{"kind":"pong"}', {binary: false})
-            }
-        },  20000);
+        // setWsHeartbeat(this.wsServer, (ws, data, binary) => {
+        //     console.log('pong server', data.toString())
+        //     if (data.toString() === '{"kind":"ping"}') { // send pong if recieved a ping.
+        //         console.log('pong server', data)
+        //         ws.send('{"kind":"pong"}', {binary: false})
+        //     }
+        // },  20000);
 
         this.wsServer.on('connection', (ws, request, client) => {
             console.log('client connected');

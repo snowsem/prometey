@@ -6,6 +6,8 @@ import {AppLogger} from "../logger";
 import {importAllServices} from "./importAllServices";
 import {createBranch} from "./createBranch";
 import {createConnection} from "typeorm";
+import {CreateVirtualEnvQueue} from "../jobs/CreateVirtualEnvQueue";
+import {DeleteVirtualEnvQueue} from "../jobs/DeleteVirtualEnvQueue";
 
 
 const cronApp = async ()=>{
@@ -30,6 +32,12 @@ const cronApp = async ()=>{
                 message: `Update envs in git`
             });
         });
+
+        const createEnvQueue = new CreateVirtualEnvQueue();
+        const deleteEnvQueue = new DeleteVirtualEnvQueue();
+        createEnvQueue.run();
+        deleteEnvQueue.run();
+
     } catch (e) {
         AppLogger.log({
             level: 'error',

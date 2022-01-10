@@ -2,6 +2,7 @@
 import dotenv from 'dotenv';
 import {AppLogger} from "../logger";
 import {MessageTypes, WsClient} from "../ws/client";
+import {CreateVirtualEnvQueue} from "../jobs/CreateVirtualEnvQueue";
 
 dotenv.config();
 var AdmZip = require("adm-zip");
@@ -82,14 +83,18 @@ var AdmZip = require("adm-zip");
         //     console.log('received: %s', data);
         // });
 
-        const ws = new WsClient();
-        ws.sendMessage({
-            data: {
-                msg: 'hello'
-            },
-            type: MessageTypes.data
-        })
-        ws.close();
+        // const ws = new WsClient();
+        // ws.sendMessage({
+        //     data: {
+        //         msg: 'hello'
+        //     },
+        //     type: MessageTypes.data
+        // })
+        // ws.close()
+
+        const newQueue = new CreateVirtualEnvQueue()
+        newQueue.addVirtualEnvQueue('aaa')
+        newQueue.close()
 
     } catch (e) {
         AppLogger.log({

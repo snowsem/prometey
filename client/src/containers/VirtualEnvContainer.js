@@ -8,10 +8,10 @@ import { notification } from 'antd';
 import {setWsHeartbeat} from "ws-heartbeat/client";
 
 const ws = new WebSocket('ws://localhost:8888')
-setWsHeartbeat(ws, '{"kind":"ping"}', {
-    pingTimeout: 6000, // in 60 seconds, if no message accepted from server, close the connection.
-    pingInterval: 2000, // every 25 seconds, send a ping message to the server.
-});
+// setWsHeartbeat(ws, '{"kind":"ping"}', {
+//     pingTimeout: 6000, // in 60 seconds, if no message accepted from server, close the connection.
+//     pingInterval: 2000, // every 25 seconds, send a ping message to the server.
+// });
 
 export class VirtualEnvContainer extends Component {
     constructor() {

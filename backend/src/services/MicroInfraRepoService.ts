@@ -78,6 +78,24 @@ export class MicroInfraRepoService {
         return map
     }
 
+
+    getAllValuesPathByVirtualEnv = (virtualEnv, folder = 'api') => {
+        const services = this.getAllServices();
+        let v = []
+        services.forEach(srv => {
+            const repoValues = this.getRepoTree()[folder][srv][this.env];
+
+            repoValues.forEach((value, key) => {
+                const str = value;
+                if (str.includes(`values-${virtualEnv}.yaml`)) {
+                    v.push(`${folder}/${srv}/${this.env}/${value}`)
+                }
+            })
+
+        })
+        return v
+    }
+
     getServiceValues = (serviceName, folder = 'api') => {
 
         let v = []

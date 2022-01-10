@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { getRepository} from "typeorm";
+import {Request, Response} from 'express';
+import {getRepository} from "typeorm";
 import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
 import {validate} from "../validators";
 import {MicroInfraService} from "../services/MicroInfraService";
@@ -7,6 +7,8 @@ import {VirtualEnvService} from "../entity/VirtualEnvService";
 import {_} from 'lodash'
 import createHttpError from 'http-errors';
 import {MessageTypes, WsClient} from "../ws/client";
+import {CreateVirtualEnvQueue} from "../jobs/CreateVirtualEnvQueue";
+import {DeleteVirtualEnvQueue} from "../jobs/DeleteVirtualEnvQueue";
 
 
 export interface IVirtualEnvPayload {
@@ -82,6 +84,7 @@ class VirtualEnvController {
             virtualEnv.virtualEnvServices = availableServices;
 
             const result = await virtualEnvRepository.save(virtualEnv);
+            const q = new CreateVirtualEnvQueue().addVirtualEnvQueue(result.id)
             return  res.json({ code: 'ok', data: result });
         } catch (e) {
             next(e);
@@ -104,11 +107,18 @@ class VirtualEnvController {
     }
 
     async delete(req: Request, res: Response, next) {
-        const virtualEnvRepository = getRepository(VirtualEnv);
+
         try {
-            await virtualEnvRepository.delete({
-                id: req.params.id
-            })
+            const virtualEnvRepository = getRepository(VirtualEnv);
+            const virtualEnv = await virtualEnvRepository.findOne({
+                where: {id:req.params.id}
+            });
+            virtualEnv.status = VirtualEnvStatus.WAIT_DELETE
+            const result = await virtualEnvRepository.save(virtualEnv);
+            const q = new DeleteVirtualEnvQueue().deleteVirtualEnvQueue(result.id)
+            // await virtualEnvRepository.delete({
+            //     id: req.params.id
+            // })
             res.sendStatus(204);
         } catch (e) {
             next(e);

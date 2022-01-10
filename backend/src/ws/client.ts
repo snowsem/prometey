@@ -23,10 +23,10 @@ export class WsClient {
             this.ws.send('something');
         });
 
-        setWsHeartbeat(this.ws, '{"kind":"ping"}', {
-            pingTimeout: 6000, // in 60 seconds, if no message accepted from server, close the connection.
-            pingInterval: 2000, // every 25 seconds, send a ping message to the server.
-        });
+        // setWsHeartbeat(this.ws, '{"kind":"ping"}', {
+        //     pingTimeout: 6000, // in 60 seconds, if no message accepted from server, close the connection.
+        //     pingInterval: 2000, // every 25 seconds, send a ping message to the server.
+        // });
 
         this.ws.on('message', (data)=> {
             //th/ws.send('something1');

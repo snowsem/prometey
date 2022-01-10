@@ -7,22 +7,26 @@ import {MicroInfraRepoService} from "../services/MicroInfraRepoService";
 import {MessageTypes, WsClient} from "../ws/client";
 //import wsClient  from '../wsClient';
 
-export const createBranch = async ()=>{
+
+export const createBranch = async (envs = [])=>{
 
     const wsClient = new WsClient();
     const infraService = new MicroInfraService();
     const repoService = new MicroInfraRepoService()
     await repoService.getRepo('custom-main')
 
-    const envs = await getRepository(VirtualEnv).find(
-        {
-            where: [
-                {status: VirtualEnvStatus.PENDING},
-                {status: VirtualEnvStatus.WAIT_PR},
-            ],
-            relations: ['virtualEnvServices']
-        }
-    )
+    if (envs.length<1) {
+         envs = await getRepository(VirtualEnv).find(
+            {
+                where: [
+                    {status: VirtualEnvStatus.PENDING},
+                    {status: VirtualEnvStatus.WAIT_PR},
+                ],
+                relations: ['virtualEnvServices']
+            }
+        )
+    }
+
 
     if (envs.length>0) {
         const newBranch = `venv-autosyc-${Date.now().toString()}`
@@ -73,8 +77,10 @@ export const createBranch = async ()=>{
                 data: env,
                 type: MessageTypes.updateVirtualEnv
             })
+
         });
     }
+    wsClient.close()
 }
 
 

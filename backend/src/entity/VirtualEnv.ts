@@ -17,7 +17,8 @@ import {JoinTable} from "typeorm/browser";
 export enum VirtualEnvStatus {
     PENDING = "pending",
     WAIT_PR = "wait_pr",
-    READY = "ready"
+    READY = "ready",
+    WAIT_DELETE = 'wait_delete'
 }
 
 @Entity()
