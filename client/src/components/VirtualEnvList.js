@@ -5,7 +5,8 @@ import {
     ReloadOutlined,
     CheckCircleOutlined,
     FieldTimeOutlined,
-    SyncOutlined
+    SyncOutlined,
+    DeleteOutlined
 } from '@ant-design/icons';
 
 
@@ -16,6 +17,7 @@ const issueStatusComponent = (status) => {
         case 'pending': result = <Tag  icon={<SyncOutlined spin />} color="default">{status}</Tag>; break;
         case 'wait_pr': result = <Tag  icon={<SyncOutlined spin />} color="default">{status}</Tag>; break;
         case 'ready': result = <Tag icon={<CheckCircleOutlined />} color="success">{status}</Tag>; break;
+        case 'wait_delete': result = <Tag icon={<DeleteOutlined spin /> } color="warning">{status}</Tag>; break;
         case 2: result = <Progress width={40} type="circle" percent={20} />; break;
         default:
             result = <Progress width={40} type="circle" percent={100} status="exception" />;
