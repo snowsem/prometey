@@ -12,7 +12,7 @@ export const deleteEnv = async (envs = [])=>{
 
     const infraService = new MicroInfraService();
     const repoService = new MicroInfraRepoService()
-    await repoService.getRepo('venv-autosyc-1641835321040')
+    await repoService.getRepo('custom-main')
     const virtualEnvRepository = getRepository(VirtualEnv);
 
     if (envs.length<1) {
@@ -27,22 +27,36 @@ export const deleteEnv = async (envs = [])=>{
     }
 
     if (envs.length>0) {
-        envs.map(async env=>{
+        try {
             const newBranch = `venv-autosyc-${Date.now().toString()}`
-            const values = repoService.getAllValuesPathByVirtualEnv(env.title)
-            const map = values.map( async valuePath => {
-                await infraService.deleteFileInBranch(valuePath, 'venv-autosyc-1641835321040',`Delete file ${valuePath}`)
+            const b = await infraService.createBranch(newBranch);
+
+            const mapEnv = envs.map(async env=>{
+                const values = repoService.getAllValuesPathByVirtualEnv(env.title)
+                console.log(values)
+                const map = values.map( async valuePath => {
+                    return await infraService.deleteFileInBranch(valuePath, newBranch,`Delete file ${valuePath}`)
+                });
+                await Promise.all(map);
+                await virtualEnvRepository.delete({
+                    id: env.id
+                })
             });
-            await Promise.all(map);
-            await virtualEnvRepository.delete({
-                id: env.id
-            })
-        })
+            await Promise.all(mapEnv)
+
+            const e = await infraService.merge('custom-main', newBranch)
+
+
+
+        } catch (e) {
+            console.log(e)
+            throw e
+        }
+
     }
 
 }
-createConnection();
-deleteEnv()
+
 
 
 

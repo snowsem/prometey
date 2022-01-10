@@ -20,7 +20,7 @@ export class MicroInfraService {
             repo: "airslate-microservices-infra",
             path: "api",
             ref: "custom-main",
-            mainBranch: 'main'
+            mainBranch: 'custom-main'
         }
     }
 
@@ -276,6 +276,15 @@ export class MicroInfraService {
         });
 
         return r
+    }
+
+    merge = async (into, youBranch)=>{
+        const r =  await this.api.rest.repos.merge({
+            owner: this.repoSetting.owner,
+            repo: this.repoSetting.repo,
+            base: this.repoSetting.mainBranch,
+            head: youBranch,
+        });
     }
 
     // getTree = async ()=>{

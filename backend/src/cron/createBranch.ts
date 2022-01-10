@@ -73,6 +73,7 @@ export const createBranch = async (envs = [])=>{
             const vp = await Promise.all(valuesMap)
             env.status = VirtualEnvStatus.READY;
             await env.save();
+            const merge = await infraService.merge('custom-main', newBranch)
             await wsClient.sendMessage({
                 data: env,
                 type: MessageTypes.updateVirtualEnv
