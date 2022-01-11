@@ -12,7 +12,7 @@ export class UpdateVirtualEnvQueue {
         this.queue = new Queue('updateVirtualEnv');
     }
 
-    addVirtualEnvQueue(id){
+    updateVirtualEnvQueue(id){
         this.queue.add('updateVirtualEnv', {id:id})
     }
 

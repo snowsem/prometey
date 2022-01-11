@@ -12,6 +12,7 @@ import {MessageTypes, WsClient} from "../ws/client";
 import {CreateVirtualEnvQueue} from "../jobs/CreateVirtualEnvQueue";
 import {DeleteVirtualEnvQueue} from "../jobs/DeleteVirtualEnvQueue";
 import {SendWsQueue} from "../jobs/SendWsQueue";
+import {UpdateVirtualEnvQueue} from "../jobs/UpdateVirtualEnvQueue";
 
 
 export interface IVirtualEnvPayload {
@@ -180,6 +181,7 @@ class VirtualEnvController {
             //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
 
             const result = await virtualEnvRepository.save(virtualEnv);
+            const q = new UpdateVirtualEnvQueue().updateVirtualEnvQueue(result.id)
             const msg = new SendWsQueue().send({
                 data: virtualEnv,
                 type: MessageTypes.updateVirtualEnv
