@@ -17,6 +17,7 @@ export class WsClient {
     private ws: WebSocket
 
     constructor() {
+        // @ts-ignore
         this.ws = io.connect('ws://localhost:8888', {
             reconnect: true,
             reconnectionDelay: 1000,
