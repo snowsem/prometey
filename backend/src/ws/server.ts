@@ -22,6 +22,8 @@ class WsServer {
                 origin: '*',
             }});
 
+        //this.wsServer.sockets.emit('message', "WS server is Alive");
+
         this.wsServer.on("connection", (socket) => {
             console.log('A user connected');
 
@@ -29,13 +31,16 @@ class WsServer {
                 console.log('A user disconnected');
             });
 
-            socket.emit('message', "WS server is Alive");
-
             socket.on('CH01', function (from, msg) {
                 console.log('MSG', from, ' saying ', msg);
             });
 
             socket.on('message', function (msg) {
+                console.log('message:',msg);
+            });
+
+            socket.on('broadcast', function (msg) {
+                socket.broadcast.emit('broadcast', msg)
                 console.log('message:',msg);
             });
         });

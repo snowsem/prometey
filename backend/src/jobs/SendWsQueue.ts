@@ -33,7 +33,7 @@ export class SendWsQueue {
     }
      handle = async(job)=>{
         try {
-            await this.wsClient.sendMessage(job.data)
+            await this.wsClient.sendBroadcast(job.data)
             job.moveToCompleted('done', true)
         } catch (error) {
             if (error.response) {

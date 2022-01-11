@@ -17,7 +17,12 @@ export class WsClient {
     private ws: WebSocket
 
     constructor() {
-        this.ws = io.connect('http://localhost:8888', {reconnect: true})
+        this.ws = io.connect('ws://localhost:8888', {
+            reconnect: true,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax : 5000,
+            reconnectionAttempts: 10
+        })
         this.ws.on('connect', function (socket) {
             console.log('Connected!');
         });
@@ -66,10 +71,15 @@ export class WsClient {
     }
 
 
+    sendBroadcast = async (data: MessageImpl) => {
+        console.log(data)
+        this.ws.emit('broadcast', data)
+    }
 
     sendMessage = async (data: MessageImpl) => {
         console.log(data)
         this.ws.emit('message', data);
+        //this.ws.emit('broadcast', data)
         //this.ws.emit('CH01', 'me', data);
 
         // if (this.ws.readyState !== this.ws.OPEN) {

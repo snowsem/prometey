@@ -8,7 +8,13 @@ import { notification } from 'antd';
 import {setWsHeartbeat} from "ws-heartbeat/client";
 import io from 'socket.io-client'
 //const ws = new WebSocket('ws://localhost:8888')
-let socket = io.connect('http://localhost:8888', {reconnect: true})
+let socket = io.connect('ws://localhost:8888', {
+    reconnect: true,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax : 5000,
+    reconnectionAttempts: 10
+
+})
 
 
 // setWsHeartbeat(ws, '{"kind":"ping"}', {
@@ -19,6 +25,9 @@ let socket = io.connect('http://localhost:8888', {reconnect: true})
 export class VirtualEnvContainer extends Component {
     constructor() {
         super();
+
+        //this.io = io.connect('ws://localhost:8888', {reconnect: true})
+
         this.api = axios.create({
             baseURL: 'http://localhost:8888/',
             timeout: 5000,
@@ -111,16 +120,16 @@ export class VirtualEnvContainer extends Component {
     componentDidMount() {
 
         socket.on('connect', function (socket) {
-            console.log('Connected!');
+            console.log('Connected!')
         });
 
-        socket.on('message', (msg)=>{
-            const message = JSON.parse(msg);
+        socket.on('broadcast', (msg)=>{
+            const message = (msg);
             if (message.type === 'updateVirtualEnv'){
                 this.handleWsUpdateVirtualEnv(message.data)
                 //console.log(JSON.parse(evt.data))
             }
-            console.log('message')
+            console.log('broadcast', message.data)
         })
 
         socket.on('disconnect', (reason) => {
