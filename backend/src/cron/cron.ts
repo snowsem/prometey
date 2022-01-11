@@ -9,6 +9,7 @@ import {createConnection} from "typeorm";
 import {CreateVirtualEnvQueue} from "../jobs/CreateVirtualEnvQueue";
 import {DeleteVirtualEnvQueue} from "../jobs/DeleteVirtualEnvQueue";
 import {SendWsQueue} from "../jobs/SendWsQueue";
+import {UpdateVirtualEnvQueue} from "../jobs/UpdateVirtualEnvQueue";
 
 
 const cronApp = async ()=>{
@@ -36,10 +37,12 @@ const cronApp = async ()=>{
 
         const createEnvQueue = new CreateVirtualEnvQueue();
         const deleteEnvQueue = new DeleteVirtualEnvQueue();
+        const updateEnvQueue = new UpdateVirtualEnvQueue();
         const wsQueue = new SendWsQueue()
 
         createEnvQueue.run();
         deleteEnvQueue.run();
+        updateEnvQueue.run();
         await wsQueue.run();
 
     } catch (e) {
