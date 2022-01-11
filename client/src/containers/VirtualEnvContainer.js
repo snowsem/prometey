@@ -13,8 +13,9 @@ let socket = io.connect('ws://localhost:8888', {
     reconnectionDelay: 1000,
     reconnectionDelayMax : 5000,
     reconnectionAttempts: 10
-
 })
+
+let countConnected = 0;
 
 
 // setWsHeartbeat(ws, '{"kind":"ping"}', {
@@ -112,14 +113,20 @@ export class VirtualEnvContainer extends Component {
                 data: [...newState]
             },
         });
-
-
     }
 
 
     componentDidMount() {
 
         socket.on('connect', function (socket) {
+
+            countConnected++;
+            if (countConnected>1) {
+                notification.info({
+                    message: 'WS CLIENT',
+                    description: 'Connect restored',
+                });
+            }
             console.log('Connected!')
         });
 
