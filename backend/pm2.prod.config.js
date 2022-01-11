@@ -2,10 +2,10 @@ module.exports = {
   apps: [
     {
       name: 'prometey-backend',
-      script: 'dist/index.js',
+      script: 'dist/server.js',
       restart_delay: 100,
       watch: ['config', 'dist'],
-      cwd: "/var/www/prometey-backend",
+      cwd: "/var/www/prometey/current/backend",
       watch_options: {
         followSymlinks: true,
       },
@@ -15,12 +15,13 @@ module.exports = {
         '--tls-min-v1.0',
       ],
     },
+
     {
-      name: 'prometey-backend',
-      script: 'dist/server.js',
+      name: 'prometey-cron-job',
+      script: 'dist/cron/cron.js',
       restart_delay: 100,
       watch: ['config', 'dist'],
-      cwd: "/var/www/prometey-backend",
+      cwd: "/var/www/prometey/current/backend",
       watch_options: {
         followSymlinks: true,
       },
