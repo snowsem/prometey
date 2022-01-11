@@ -17,7 +17,7 @@ export class MicroInfraService {
                 format: "raw",
             },
             owner: process.env.GITHUB_REPO_OWNER || "airslateinc",
-            repo: process.env.GITHUB_REPO ||"airslate-microservices-infra",
+            repo: process.env.GITHUB_REPO || "airslate-microservices-infra",
             path: "api",
             ref: process.env.GITHUB_REPO_BRANCH || "custom-main",
             mainBranch: process.env.GITHUB_REPO_BRANCH || 'custom-main'

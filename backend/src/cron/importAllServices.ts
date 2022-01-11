@@ -4,7 +4,7 @@ import {MicroInfraRepoService} from "../services/MicroInfraRepoService";
 
 export const importAllServices = async ()=>{
     const infraRepoService = new MicroInfraRepoService();
-    await infraRepoService.getRepo('prometey-test-1');
+    await infraRepoService.getRepo(process.env.GITHUB_REPO_BRANCH);
     const gitServices = await infraRepoService.getAllServices();
 
     const valuesMap = gitServices.map((srv)=>{

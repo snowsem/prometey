@@ -13,7 +13,7 @@ export const createBranch = async (envs = [])=>{
     const wsClient = new WsClient();
     const infraService = new MicroInfraService();
     const repoService = new MicroInfraRepoService()
-    await repoService.getRepo(process.env.GITHUB_REPO_OWNER)
+    await repoService.getRepo(process.env.GITHUB_REPO_BRANCH)
 
     if (envs.length<1) {
          envs = await getRepository(VirtualEnv).find(

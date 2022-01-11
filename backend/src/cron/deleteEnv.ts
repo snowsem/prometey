@@ -12,7 +12,7 @@ export const deleteEnv = async (envs = [])=>{
 
     const infraService = new MicroInfraService();
     const repoService = new MicroInfraRepoService()
-    await repoService.getRepo(process.env.GITHUB_REPO_OWNER)
+    await repoService.getRepo(process.env.GITHUB_REPO_BRANCH)
     const virtualEnvRepository = getRepository(VirtualEnv);
 
     if (envs.length<1) {

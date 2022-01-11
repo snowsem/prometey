@@ -3,6 +3,8 @@ import {getRepository} from "typeorm";
 import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
 import {validate} from "../validators";
 import {MicroInfraService} from "../services/MicroInfraService";
+
+import {MicroInfraService as MicroInfraServiceEntity} from "../entity/MicroInfraService";
 import {VirtualEnvService} from "../entity/VirtualEnvService";
 import {_} from 'lodash'
 import createHttpError from 'http-errors';
@@ -50,11 +52,15 @@ class VirtualEnvController {
     async create(req: Request, res: Response, next) {
         try {
             const microInfraService = new MicroInfraService(process.env.GITHUB_API_TOKEN);
-            const services = await microInfraService.getAllServices();
-            console.log(services)
 
+            const serviceRepo = getRepository(MicroInfraServiceEntity)
+            const servicesEntities = await serviceRepo.find();
+            //const services = await microInfraService.getAllServices();
+            const services = servicesEntities.map(srv=>{
+                return srv.name
+            })
 
-            console.log('availableServices')
+            console.log('availableServices', services)
             const rules = {
                 title: 'string|min:6',
             };
