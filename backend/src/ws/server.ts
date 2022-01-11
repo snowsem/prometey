@@ -1,6 +1,4 @@
-import WebSocket from 'ws';
-import {log} from "winston";
-//import {setWsHeartbeat} from "ws-heartbeat/server";
+import { Server } from "socket.io";
 
 class WsServer {
     private wsServer;
@@ -11,45 +9,39 @@ class WsServer {
             return WsServer.instance;
         }
         if (server) {
-            this.wsServer = new WebSocket.Server({ server });
+            this.wsServer = new Server(server, {
+                cors: {
+                    origin: '*:*',
+                }});
         }
         WsServer.instance = this;
     }
 
     init(server) {
-        this.wsServer = new WebSocket.Server({ server });
+        this.wsServer = new Server(server, {cors: {
+                origin: '*',
+            }});
 
-        // setWsHeartbeat(this.wsServer, (ws, data, binary) => {
-        //     console.log('pong server', data.toString())
-        //     if (data.toString() === '{"kind":"ping"}') { // send pong if recieved a ping.
-        //         console.log('pong server', data)
-        //         ws.send('{"kind":"pong"}', {binary: false})
-        //     }
-        // },  20000);
+        this.wsServer.on("connection", (socket) => {
+            console.log('A user connected');
 
-        this.wsServer.on('connection', (ws, request, client) => {
-            console.log('client connected');
-            ws.send('hello client')
+            socket.on('disconnect', function () {
+                console.log('A user disconnected');
+            });
 
-            ws.on('message', (data, isBinary) => {
-                console.log('client say:', data)
-                this.wsServer.clients.forEach(client => {
-                    if (client && client.readyState === WebSocket.OPEN && client !== ws) {
-                        client.send(data, {binary: isBinary})
-                    }
-                });
+            socket.emit('message', "WS server is Alive");
+
+            socket.on('CH01', function (from, msg) {
+                console.log('MSG', from, ' saying ', msg);
+            });
+
+            socket.on('message', function (msg) {
+                console.log('message:',msg);
             });
         });
-
-        this.wsServer.on("error", e => this.wsServer.send(e));
     }
 
     send(message, ws) {
-        this.wsServer.clients.forEach(client => {
-            if (client && client.readyState === WebSocket.OPEN && client !== WebSocket) {
-                client.send(JSON.stringify(message))
-            }
-        });
     }
 }
 

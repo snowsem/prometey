@@ -6,8 +6,11 @@ import {EditVirtualEnvModal} from "./EditVirtualEnvModal";
 import {ConformModal} from "../components/ConformModal";
 import { notification } from 'antd';
 import {setWsHeartbeat} from "ws-heartbeat/client";
+import io from 'socket.io-client'
+//const ws = new WebSocket('ws://localhost:8888')
+let socket = io.connect('http://localhost:8888', {reconnect: true})
 
-const ws = new WebSocket('ws://localhost:8888')
+
 // setWsHeartbeat(ws, '{"kind":"ping"}', {
 //     pingTimeout: 6000, // in 60 seconds, if no message accepted from server, close the connection.
 //     pingInterval: 2000, // every 25 seconds, send a ping message to the server.
@@ -106,20 +109,44 @@ export class VirtualEnvContainer extends Component {
 
 
     componentDidMount() {
-        ws.onclose = ev => {
-            notification.error({
-                message: 'WS CLIENT',
-                description: 'Disconnected',
-            });
-        }
-        ws.onmessage = evt => {
-            // listen to the messages
-            const message = JSON.parse(evt.data);
+
+        socket.on('connect', function (socket) {
+            console.log('Connected!');
+        });
+
+        socket.on('message', (msg)=>{
+            const message = JSON.parse(msg);
             if (message.type === 'updateVirtualEnv'){
                 this.handleWsUpdateVirtualEnv(message.data)
                 //console.log(JSON.parse(evt.data))
             }
-        }
+            console.log('message')
+        })
+
+        socket.on('disconnect', (reason) => {
+            console.log("client disconnected");
+            if (reason === 'io server disconnect') {
+                notification.error({
+                    message: 'WS CLIENT',
+                    description: 'Disconnected',
+                });
+                // the disconnection was initiated by the server, you need to reconnect manually
+                console.log("server disconnected the client, trying to reconnect");
+                socket.connect();
+            }else{
+                notification.warning({
+                    message: 'WS CLIENT',
+                    description: 'trying to reconnect again with server',
+                });
+                console.log("trying to reconnect again with server");
+            }
+            // else the socket will automatically try to reconnect
+        });
+
+        socket.on('error', (error) => {
+            console.log(error);
+        });
+
         setTimeout(async ()=>{
             await this.getAllVirtualEnv()
         }, 1000);

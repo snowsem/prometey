@@ -6,7 +6,7 @@ import {CreateVirtualEnvQueue} from "../jobs/CreateVirtualEnvQueue";
 import {SendWsQueue} from "../jobs/SendWsQueue";
 
 dotenv.config();
-var AdmZip = require("adm-zip");
+
 ( async ()=>{
     try {
        //  await createConnection();
@@ -84,21 +84,30 @@ var AdmZip = require("adm-zip");
         //     console.log('received: %s', data);
         // });
 
-        const ws = new WsClient();
-        await ws.sendMessage({
-            data: {
-                msg: 'hello'
-            },
-            type: MessageTypes.data
-        })
-        ws.close()
-
-
+        // const ws = new WsClient();
+        // await ws.sendMessage({
+        //     data: {
+        //         msg: 'hello'
+        //     },
+        //     type: MessageTypes.data
+        // })
+        // ws.close()
+        //
+        //
         const newQueue = new SendWsQueue()
         newQueue.send({
             data: {hello:'1'},
             type: MessageTypes.data
         })
+
+        // const wsClient = new WsClient();
+        // await wsClient.sendMessage(
+        //     {
+        //         data: {hello:'1'},
+        //         type: MessageTypes.data
+        //     }
+        // )
+        //wsClient.close()
     } catch (e) {
         AppLogger.log({
             level: 'error',

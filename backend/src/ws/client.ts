@@ -1,5 +1,6 @@
 import WebSocket from 'ws';
-//import {setWsHeartbeat} from "ws-heartbeat/client";
+
+import io from 'socket.io-client'
 
 export enum MessageTypes {
     data = 'data',
@@ -16,22 +17,32 @@ export class WsClient {
     private ws: WebSocket
 
     constructor() {
-        this.ws = new WebSocket('ws://localhost:8888');
-
-        this.ws.on('open', (ws)=> {
-            console.log('open')
-            this.ws.send('something');
+        this.ws = io.connect('http://localhost:8888', {reconnect: true})
+        this.ws.on('connect', function (socket) {
+            console.log('Connected!');
         });
 
-        // setWsHeartbeat(this.ws, '{"kind":"ping"}', {
-        //     pingTimeout: 6000, // in 60 seconds, if no message accepted from server, close the connection.
-        //     pingInterval: 2000, // every 25 seconds, send a ping message to the server.
-        // });
+        this.ws.on('message', (msg)=>{
+            console.log('message from server:', msg)
+        })
 
-        this.ws.on('message', (data)=> {
-            //th/ws.send('something1');
-            console.log('received: %s', data);
+        this.ws.on('disconnect', (reason) => {
+            console.log("client disconnected");
+            if (reason === 'io server disconnect') {
+                // the disconnection was initiated by the server, you need to reconnect manually
+                console.log("server disconnected the client, trying to reconnect");
+                this.ws.connect();
+            }else{
+                console.log("trying to reconnect again with server");
+            }
+            // else the socket will automatically try to reconnect
         });
+
+        this.ws.on('error', (error) => {
+            console.log(error);
+        });
+
+        //this.ws.emit('CH01', 'me', 'test msg');
 
     }
 
@@ -57,20 +68,24 @@ export class WsClient {
 
 
     sendMessage = async (data: MessageImpl) => {
-        if (this.ws.readyState !== this.ws.OPEN) {
-            try {
-                await this.waitForOpenConnection(this.ws)
-                this.ws.send(JSON.stringify({
-                    type: data.type || MessageTypes.data,
-                    data: data.data
-                }));
-            } catch (err) { console.error(err) }
-        } else {
-            this.ws.send(JSON.stringify({
-                type: data.type || MessageTypes.data,
-                data: data.data
-            }));
-        }
+        console.log(data)
+        this.ws.emit('message', data);
+        //this.ws.emit('CH01', 'me', data);
+
+        // if (this.ws.readyState !== this.ws.OPEN) {
+        //     try {
+        //         await this.waitForOpenConnection(this.ws)
+        //         this.ws.send(JSON.stringify({
+        //             type: data.type || MessageTypes.data,
+        //             data: data.data
+        //         }));
+        //     } catch (err) { console.error(err) }
+        // } else {
+        //     this.ws.send(JSON.stringify({
+        //         type: data.type || MessageTypes.data,
+        //         data: data.data
+        //     }));
+        // }
     }
     close = ()=>{
         this.ws.close()
