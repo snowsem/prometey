@@ -16,11 +16,11 @@ export class MicroInfraService {
             mediaType: {
                 format: "raw",
             },
-            owner: "airslateinc",
-            repo: "airslate-microservices-infra",
+            owner: process.env.GITHUB_REPO_OWNER || "airslateinc",
+            repo: process.env.GITHUB_REPO ||"airslate-microservices-infra",
             path: "api",
-            ref: "custom-main",
-            mainBranch: 'custom-main'
+            ref: process.env.GITHUB_REPO_BRANCH || "custom-main",
+            mainBranch: process.env.GITHUB_REPO_BRANCH || 'custom-main'
         }
     }
 

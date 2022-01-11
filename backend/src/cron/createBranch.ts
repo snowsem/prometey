@@ -13,7 +13,7 @@ export const createBranch = async (envs = [])=>{
     const wsClient = new WsClient();
     const infraService = new MicroInfraService();
     const repoService = new MicroInfraRepoService()
-    await repoService.getRepo('custom-main')
+    await repoService.getRepo(process.env.GITHUB_REPO_OWNER)
 
     if (envs.length<1) {
          envs = await getRepository(VirtualEnv).find(
@@ -73,7 +73,7 @@ export const createBranch = async (envs = [])=>{
             const vp = await Promise.all(valuesMap)
             env.status = VirtualEnvStatus.READY;
             await env.save();
-            const merge = await infraService.merge('custom-main', newBranch)
+            const merge = await infraService.merge(process.env.GITHUB_REPO_OWNER, newBranch)
             await wsClient.sendMessage({
                 data: env,
                 type: MessageTypes.updateVirtualEnv

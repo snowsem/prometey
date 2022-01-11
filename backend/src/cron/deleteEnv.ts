@@ -12,7 +12,7 @@ export const deleteEnv = async (envs = [])=>{
 
     const infraService = new MicroInfraService();
     const repoService = new MicroInfraRepoService()
-    await repoService.getRepo('custom-main')
+    await repoService.getRepo(process.env.GITHUB_REPO_OWNER)
     const virtualEnvRepository = getRepository(VirtualEnv);
 
     if (envs.length<1) {
@@ -44,7 +44,7 @@ export const deleteEnv = async (envs = [])=>{
             });
             await Promise.all(mapEnv)
 
-            const e = await infraService.merge('custom-main', newBranch)
+            const e = await infraService.merge(process.env.GITHUB_REPO_OWNER, newBranch)
 
 
 
