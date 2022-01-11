@@ -51,6 +51,8 @@ class VirtualEnvController {
         try {
             const microInfraService = new MicroInfraService(process.env.GITHUB_API_TOKEN);
             const services = await microInfraService.getAllServices();
+            console.log(services)
+
 
             console.log('availableServices')
             const rules = {
