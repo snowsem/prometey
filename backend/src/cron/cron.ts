@@ -8,6 +8,7 @@ import {createBranch} from "./createBranch";
 import {createConnection} from "typeorm";
 import {CreateVirtualEnvQueue} from "../jobs/CreateVirtualEnvQueue";
 import {DeleteVirtualEnvQueue} from "../jobs/DeleteVirtualEnvQueue";
+import {SendWsQueue} from "../jobs/SendWsQueue";
 
 
 const cronApp = async ()=>{
@@ -35,8 +36,11 @@ const cronApp = async ()=>{
 
         const createEnvQueue = new CreateVirtualEnvQueue();
         const deleteEnvQueue = new DeleteVirtualEnvQueue();
+        const wsQueue = new SendWsQueue()
+
         createEnvQueue.run();
         deleteEnvQueue.run();
+        await wsQueue.run();
 
     } catch (e) {
         AppLogger.log({

@@ -1,12 +1,12 @@
 import WebSocket from 'ws';
-import {setWsHeartbeat} from "ws-heartbeat/client";
+//import {setWsHeartbeat} from "ws-heartbeat/client";
 
 export enum MessageTypes {
     data = 'data',
     updateVirtualEnv = 'updateVirtualEnv'
 }
 
-interface MessageImpl {
+export interface MessageImpl {
     type: MessageTypes,
     data: object
 }
@@ -37,7 +37,7 @@ export class WsClient {
 
     waitForOpenConnection = (socket) => {
         return new Promise<void>((resolve, reject) => {
-            const maxNumberOfAttempts = 10
+            const maxNumberOfAttempts = 30
             const intervalTime = 200 //ms
 
             let currentAttempt = 0

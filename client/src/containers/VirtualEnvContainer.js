@@ -131,6 +131,7 @@ export class VirtualEnvContainer extends Component {
             return {isLoading:true}
         });
         const data = await this.api.get(`/virtual_env/${id}`);
+        console.log('!!!.data', data);
         this.setState(()=>{
             return {showEditModal: true, editModalData: data.data.data, isLoading:false}
         });

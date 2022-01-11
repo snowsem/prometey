@@ -72,7 +72,7 @@ export function EditVirtualEnvModal(props) {
             dataIndex: 'service_github_tag',
             key: 'service_github_tag',
             render: (text, record) => (
-                <Input placeholder={'default tag'} defaultValue={text} onChange={(e) => {
+                <Input key={record.id} placeholder={'default tag'} defaultValue={text} onChange={(e) => {
                     setGithubTags({
                         ...githubTagsByServiceId,
                         [record.id]: e.target.value,

@@ -1,10 +1,11 @@
 import {MicroInfraService} from "../services/MicroInfraService";
 import {stringify as yamlStr} from 'yaml';
 import {base64encode} from 'nodejs-base64';
-import {createConnection, getRepository} from "typeorm";
+import {getRepository} from "typeorm";
 import {VirtualEnv, VirtualEnvStatus} from "../entity/VirtualEnv";
 import {MicroInfraRepoService} from "../services/MicroInfraRepoService";
 import {MessageTypes, WsClient} from "../ws/client";
+import {SendWsQueue} from "../jobs/SendWsQueue";
 //import wsClient  from '../wsClient';
 
 
@@ -74,9 +75,10 @@ export const createBranch = async (envs = [])=>{
             env.status = VirtualEnvStatus.READY;
             await env.save();
             const merge = await infraService.merge(process.env.GITHUB_REPO_OWNER, newBranch)
-            await wsClient.sendMessage({
+            const msg = new SendWsQueue().send({
                 data: env,
                 type: MessageTypes.updateVirtualEnv
+
             })
 
         });

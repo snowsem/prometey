@@ -11,6 +11,7 @@ import createHttpError from 'http-errors';
 import {MessageTypes, WsClient} from "../ws/client";
 import {CreateVirtualEnvQueue} from "../jobs/CreateVirtualEnvQueue";
 import {DeleteVirtualEnvQueue} from "../jobs/DeleteVirtualEnvQueue";
+import {SendWsQueue} from "../jobs/SendWsQueue";
 
 
 export interface IVirtualEnvPayload {
@@ -160,25 +161,30 @@ class VirtualEnvController {
 
             virtualEnv.title = req.body.title || virtualEnv.title
             virtualEnv.status = VirtualEnvStatus.WAIT_PR
+
             virtualEnv.virtualEnvServices.map(item => {
                 const newValue = _.find(req.body.virtualEnvServices, ['id', item.id])
+                console.log('!!!.newValue', newValue);
                 if (newValue) {
-                    item.service_github_tag = newValue.service_github_tag || item.service_github_tag
+                    const tag = Object.prototype.hasOwnProperty.call(newValue, 'service_github_tag')
+                        ? newValue.service_github_tag
+                        : item.service_github_tag;
+                    console.log('!!!.tag', tag);
+                    item.service_github_tag = tag;
                     item.is_enable = newValue.is_enable || item.is_enable
                 }
             });
 
             //WsClient.send({ id: virtualEnv.id, data:virtualEnv });
-            console.log(virtualEnv.virtualEnvServices, req.body.virtualEnvServices)
+            // console.log(virtualEnv.virtualEnvServices, req.body.virtualEnvServices)
             //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
 
             const result = await virtualEnvRepository.save(virtualEnv);
-            const ws = new WsClient();
-            await ws.sendMessage({
+            const msg = new SendWsQueue().send({
                 data: virtualEnv,
                 type: MessageTypes.updateVirtualEnv
+
             })
-            ws.close();
             return res.json({code: 'ok', data: result});
         } catch(e) {
             next(e);

@@ -1,6 +1,6 @@
 import WebSocket from 'ws';
 import {log} from "winston";
-import {setWsHeartbeat} from "ws-heartbeat/server";
+//import {setWsHeartbeat} from "ws-heartbeat/server";
 
 class WsServer {
     private wsServer;
