@@ -66,7 +66,11 @@ export function CreateVirtualEnvModal(props) {
                 description: json?.errors?.[0]?.title ?? 'Something went wrong. Try again later',
             });
         }
-    }
+    };
+
+    const virtualEnvServices = React.useMemo(() => {
+        return availableServiceNames.map((service) => ({ id: service.name, service_name: service.name, default_tag: service.default_tag }));
+    }, [availableServiceNames]);
 
     return (
         <div>
@@ -89,9 +93,8 @@ export function CreateVirtualEnvModal(props) {
                         <Layout style={{ backgroundColor: "#fff" }}>
                             <ServicesForm
                                 id="create-tags-form"
-                                virtualEnvServices={availableServiceNames.map((service) => ({ id: service.name, service_name: service.name, default_tag: service.default_tag }))}
+                                virtualEnvServices={virtualEnvServices}
                                 onFinish={onOkHandler}
-                                initialValues={{}}
                             />
                         </Layout>
                     </> )}

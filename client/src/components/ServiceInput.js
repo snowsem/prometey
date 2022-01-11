@@ -1,16 +1,16 @@
 import React from 'react';
 import { Form, Input } from 'antd';
 
-function ServiceInput({ service }) {
+function ServiceInput({ service_name, id, default_tag }) {
     return (
         <Form.Item
-            label={service.service_name}
-            name={service.id}
+            label={service_name}
+            name={id}
             rules={[{ required: false, message: 'default' }]}
         >
-            <Input placeholder={`Default tag ${service.default_tag}`}/>
+            <Input placeholder={`Default tag ${default_tag}`}/>
         </Form.Item>
     )
 }
 
-export default ServiceInput;
+export default React.memo(ServiceInput);

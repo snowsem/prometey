@@ -27,7 +27,7 @@ function ServicesForm({ id, onFinish, virtualEnvServices }) {
         >
             {virtualEnvServices
                 ?.sort((a, b) => a.service_name > b.service_name ? 1 : -1)
-                ?.map((service) => <ServiceInput key={service?.id} service={service}/>)}
+                ?.map((service) => <ServiceInput key={service?.id} service_name={service.service_name} id={service.service_name} default_tag={service.default_tag} />)}
         </Form>
     )
 }
