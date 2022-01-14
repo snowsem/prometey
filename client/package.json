@@ -11,6 +11,7 @@
     "dotenv": "^11.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-dotenv": "^0.1.3",
     "react-google-login": "^5.2.2",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
@@ -18,9 +19,9 @@
     "web-vitals": "^2.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-dotenv && react-scripts start",
+    "build": "react-dotenv && react-scripts build",
+    "test": "react-dotenv &&  react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -46,5 +47,8 @@
     "antd": "^4.17.4",
     "axios": "^0.24.0",
     "ws-heartbeat": "^1.2.0"
+  },
+  "react-dotenv": {
+    "whitelist": ["GOOGLE_CLIENT_ID"]
   }
 }

@@ -17,11 +17,13 @@ import GoogleLogin from "react-google-login";
 import axios, {AxiosResponse} from "axios";
 import {Component} from "react";
 
+import env from "react-dotenv";
 
 class App extends Component {
 
     constructor(props) {
         super(props);
+        console.log('client', env.GOOGLE_CLIENT_ID)
         this.state = {
             user: null,
             apiToken: null,
@@ -108,7 +110,7 @@ class App extends Component {
 
                                             <GoogleLogin
 
-                                                clientId={`732726255249-2e5imu8sql3r5qdlbmqsqgkfu0u4bpvh.apps.googleusercontent.com`}
+                                                clientId={env.GOOGLE_CLIENT_ID}
                                                 onSuccess={this.onSuccessAuth}
                                                 onFailure={this.onFailureAuth}
                                             />
