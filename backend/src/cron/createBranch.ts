@@ -23,7 +23,7 @@ export const createBranch = async (envs = [])=>{
                     {status: VirtualEnvStatus.PENDING},
                     {status: VirtualEnvStatus.WAIT_PR},
                 ],
-                relations: ['virtualEnvServices']
+                relations: ['virtualEnvServices', 'user']
             }
         )
     }

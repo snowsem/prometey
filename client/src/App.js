@@ -19,6 +19,10 @@ import {Component} from "react";
 
 import env from "react-dotenv";
 
+export const getToken = ()=>{
+    const token = localStorage.getItem('auth_token');
+    return token;
+}
 class App extends Component {
 
     constructor(props) {
@@ -41,7 +45,6 @@ class App extends Component {
     setAuthHeader = (token)=>{
         this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`
     }
-
 
     componentDidMount = async ()=> {
         const isAuth = await this.checkAuth()
@@ -114,9 +117,6 @@ class App extends Component {
                                                 onSuccess={this.onSuccessAuth}
                                                 onFailure={this.onFailureAuth}
                                             />
-
-
-
                                     )}
 
                                     {this.state.isAuth && (

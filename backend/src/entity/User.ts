@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import {VirtualEnvService} from "./VirtualEnvService";
 import {JoinTable} from "typeorm/browser";
+import {VirtualEnv} from "./VirtualEnv";
 
 @Entity()
 export class User extends BaseEntity{
@@ -48,19 +49,22 @@ export class User extends BaseEntity{
     email:string;
 
     @Column({
-        nullable:true
+        nullable:true,
+        select: false,
     })
     password:string;
 
     @Column({
         nullable:true,
+        select: false,
         type: "text"
     })
     token_google:string;
 
     @Column({
         nullable:true,
-        type: "text"
+        type: "text",
+        select: false
     })
     token:string;
 
@@ -69,4 +73,7 @@ export class User extends BaseEntity{
 
     @UpdateDateColumn({ type: "timestamp" })
     updated_at: number;
+
+    @OneToMany(() => VirtualEnv,'')
+    virtualEnvs: VirtualEnv[];
 }

@@ -33,7 +33,7 @@ export class UpdateVirtualEnvQueue {
                         where: [
                             {id: virtualEnvId},
                         ],
-                        relations: ['virtualEnvServices']
+                        relations: ['virtualEnvServices', 'user']
                     }
                 );
             await createBranch(envs)

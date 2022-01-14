@@ -9,10 +9,11 @@ import {
     UpdateDateColumn,
     Generated,
     OneToOne,
-    JoinColumn, OneToMany
+    JoinColumn, OneToMany, ManyToOne
 } from 'typeorm';
 import {VirtualEnvService} from "./VirtualEnvService";
 import {JoinTable} from "typeorm/browser";
+import {User} from "./User";
 
 export enum VirtualEnvStatus {
     PENDING = "pending",
@@ -64,5 +65,17 @@ export class VirtualEnv extends BaseEntity{
         default: VirtualEnvStatus.PENDING
     })
     status: VirtualEnvStatus;
+
+    @ManyToOne(() => User, user => user.virtualEnvs)
+    @JoinColumn({name: 'user_id'})
+    user: User;
+
+    @Column(
+        {
+            nullable:true,
+            type:"number"
+        }
+    )
+    user_id: number
 }
 

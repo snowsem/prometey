@@ -35,7 +35,7 @@ class VirtualEnvController {
             order: {
                 id: "DESC"
             },
-            relations: ['virtualEnvServices'],
+            relations: ['virtualEnvServices', 'user'],
 
         });
 
@@ -79,6 +79,7 @@ class VirtualEnvController {
             virtualEnv.title = req.body.title;
             virtualEnv.description = req.body.description;
             virtualEnv.owner = req.body.owner;
+            virtualEnv.user_id = req.user.id || null
             const githubTagByServiceName = req.body?.githubTagByServiceName;
 
             let availableServices = [];
@@ -105,7 +106,7 @@ class VirtualEnvController {
         const virtualEnvRepository = getRepository(VirtualEnv);
         const virtualEnv = await virtualEnvRepository.findOne({
             where: {id:req.params.id},
-            relations: ['virtualEnvServices'],
+            relations: ['virtualEnvServices', 'user'],
         });
 
 
@@ -151,7 +152,7 @@ class VirtualEnvController {
             const virtualEnvRepository = getRepository(VirtualEnv)
             const virtualEnv = await virtualEnvRepository.findOne({
                 where: {id: req.params.id},
-                relations: ['virtualEnvServices'],
+                relations: ['virtualEnvServices', 'user'],
             });
 
             if (!virtualEnv) {

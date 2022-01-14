@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "antd/es/modal/Modal";
 import {Input, Layout, notification, Spin} from "antd";
 import ServicesForm from "./ServicesForm";
+import {getToken} from "../App";
 
 export function CreateVirtualEnvModal(props) {
     const { closeModal, applyCreateModal, visible } = props;
@@ -49,6 +50,7 @@ export function CreateVirtualEnvModal(props) {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
+                'authorization': `Bearer ${getToken()}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({

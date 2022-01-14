@@ -59,6 +59,14 @@ export class VirtualEnvList extends Component{
                 key: 'created_at',
             },
             {
+                title: 'Owner',
+                dataIndex: 'user',
+                key: 'user',
+                render: (text, record) => (
+                   record.user?.email
+                ),
+            },
+            {
                 title: 'Action',
                 key: 'delete',
                 dataIndex: 'delete',
