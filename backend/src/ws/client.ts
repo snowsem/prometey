@@ -38,8 +38,10 @@ export class WsClient {
                 // the disconnection was initiated by the server, you need to reconnect manually
                 console.log("server disconnected the client, trying to reconnect");
                 this.ws.connect();
-            }else{
-                console.log("trying to reconnect again with server");
+            }else if (reason === 'io client disconnect'){
+                console.log("client:", reason);
+            } else {
+                console.log(reason)
             }
             // else the socket will automatically try to reconnect
         });
@@ -99,6 +101,7 @@ export class WsClient {
         // }
     }
     close = ()=>{
+        console.log('close c')
         this.ws.close()
     }
 }

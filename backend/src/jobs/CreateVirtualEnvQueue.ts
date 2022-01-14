@@ -13,7 +13,7 @@ export class CreateVirtualEnvQueue {
     }
 
     addVirtualEnvQueue(id){
-        this.queue.add('createVirtualEnv', {id:id})
+        this.queue.add('createVirtualEnv', {id:id},  { removeOnComplete: true})
     }
 
     run = ()=>{

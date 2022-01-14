@@ -17,7 +17,7 @@ export class SendWsQueue {
     }
 
     send(msg: MessageImpl){
-        this.queue.add('sendWsQueue', msg)
+        this.queue.add('sendWsQueue', msg, { removeOnComplete: true})
         this.queue.close()
     }
 

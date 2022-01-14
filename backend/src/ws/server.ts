@@ -18,12 +18,14 @@ class WsServer {
     }
 
     init(server) {
-        this.wsServer = new Server(server, {cors: {
+        this.wsServer = new Server(server, {
+            pingTimeout: 10000,
+            pingInterval: 30000,
+            cors: {
                 origin: '*',
             }});
 
         //this.wsServer.sockets.emit('message', "WS server is Alive");
-
         this.wsServer.on("connection", (socket) => {
             console.log('A user connected');
 

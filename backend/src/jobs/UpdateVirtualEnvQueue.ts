@@ -13,7 +13,7 @@ export class UpdateVirtualEnvQueue {
     }
 
     updateVirtualEnvQueue(id){
-        this.queue.add('updateVirtualEnv', {id:id})
+        this.queue.add('updateVirtualEnv', {id:id}, { removeOnComplete: true})
     }
 
     run = ()=>{

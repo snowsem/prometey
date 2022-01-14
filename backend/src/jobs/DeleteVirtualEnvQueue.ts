@@ -14,7 +14,7 @@ export class DeleteVirtualEnvQueue {
     }
 
     deleteVirtualEnvQueue(id){
-        this.queue.add('deleteVirtualEnv', {id:id})
+        this.queue.add('deleteVirtualEnv', {id:id}, { removeOnComplete: true})
     }
 
     run = ()=>{
