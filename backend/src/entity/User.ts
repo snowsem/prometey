@@ -35,12 +35,28 @@ export class User extends BaseEntity{
     @Column({
         nullable:true
     })
+    avatar:string;
+
+    @Column({
+        nullable:true
+    })
     login:string;
 
     @Column({
         nullable:true
     })
+    email:string;
+
+    @Column({
+        nullable:true
+    })
     password:string;
+
+    @Column({
+        nullable:true,
+        type: "text"
+    })
+    token_google:string;
 
     @Column({
         nullable:true,

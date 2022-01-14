@@ -11,6 +11,8 @@ export class LayoutComponent extends Component {
                     <Header>
                         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
                             <Menu.Item key="1">VirtualEnv</Menu.Item>
+                            { this.props.mainState.isAuth && <Menu.Item onClick={this.props.logout} key="2">Logout</Menu.Item> }
+
                         </Menu>
                     </Header>
                     <Content style={{padding: '0 50px'}}>

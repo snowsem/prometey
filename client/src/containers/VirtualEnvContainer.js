@@ -24,16 +24,12 @@ let countConnected = 0;
 // });
 
 export class VirtualEnvContainer extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         //this.io = io.connect('ws://localhost:8888', {reconnect: true})
 
-        this.api = axios.create({
-            baseURL: 'http://localhost:8888/',
-            timeout: 5000,
-            //headers: {'X-Custom-Header': 'foobar'}
-        })
+        this.api = props.api
         this.state = {
             virtualEnv:{},
             isLoading: true,
