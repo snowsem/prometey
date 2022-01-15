@@ -49,22 +49,9 @@ class AuthController {
     }
 
     me = async (req: Request, res: Response)=>{
-        let token =
-            req.body.token || req.query.token || req.headers["x-access-token"];
-
-        if (req.headers["authorization"]) {
-            const bearer = req.headers["authorization"].split(' ');
-            token = bearer[1];
-        }
-
-        if (!token) {
-            return res.status(403).send("A token is required for authentication");
-        }
         try {
-            const decoded = jwt.verify(token, process.env.TOKEN_KEY);
-            let user = await User.findOne({ email: decoded?.user_email });
+            let user = await User.findOne({ email: req.user.user_email });
             res.json({ user:user });
-
         } catch (err) {
             return res.status(401).send("Invalid Token");
         }
