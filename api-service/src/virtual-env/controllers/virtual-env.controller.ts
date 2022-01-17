@@ -1,5 +1,5 @@
 import {Body, Controller, Get, Post, Query, Param} from '@nestjs/common';
-import {VirtualEnvService} from "../services/virtual-env.service";
+import {VenvService} from "../services/venv.service";
 import {PaginationParams} from "../../types/PaginationParams";
 import {CreateVirtualEnvDto} from "../dto/create-virtual-env.dto";
 import {MicroInfraApiService} from "../../github/services/micro-infra-api.service";
@@ -7,7 +7,7 @@ import {MicroInfraApiService} from "../../github/services/micro-infra-api.servic
 @Controller('virtual-env')
 export class VirtualEnvController {
     constructor(
-        private readonly virtualEnvService: VirtualEnvService,
+        private readonly virtualEnvService: VenvService,
         private git: MicroInfraApiService
     ) {
     }
@@ -35,6 +35,7 @@ export class VirtualEnvController {
         return this.virtualEnvService.findById(+id);
     }
 
+    @Post()
     public create(
         @Body() virtualEnv: CreateVirtualEnvDto
     )

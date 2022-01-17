@@ -18,7 +18,7 @@ import { GithubModule } from './github/github.module';
           username: process.env.DB_USERNAME,
           password: process.env.DB_PASSWORD,
           database: process.env.DB_NAME,
-          logging: true,
+          logging: false,
           autoLoadEntities: true,
           entities: ["dist/**/*.entity{.ts,.js}"],
           migrations: [
