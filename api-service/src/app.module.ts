@@ -5,6 +5,7 @@ import { VirtualEnvModule } from './virtual-env/virtual-env.module';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {ConfigModule} from "@nestjs/config";
 import {typeOrmConfig} from "./configs";
+import { GithubModule } from './github/github.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {typeOrmConfig} from "./configs";
           password: process.env.DB_PASSWORD,
           database: process.env.DB_NAME,
           logging: true,
+          autoLoadEntities: true,
           entities: ["dist/**/*.entity{.ts,.js}"],
           migrations: [
               "database/migrations/**/*.js"
@@ -30,7 +32,7 @@ import {typeOrmConfig} from "./configs";
               "migrationsDir": "database/migrations",
               "subscribersDir": "src/subscriber"
           }
-      })
+      }),
   ],
   controllers: [AppController],
   providers: [AppService],
