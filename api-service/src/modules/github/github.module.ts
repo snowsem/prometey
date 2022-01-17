@@ -1,13 +1,16 @@
-import { Module } from '@nestjs/common';
-import {MicroInfraApiService} from "./services/micro-infra-api.service";
-import {MicroInfraRepoService} from "./services/micro-infra-repo.service";
+import { forwardRef, Module } from '@nestjs/common';
+import { MicroInfraApiService } from './services/micro-infra-api.service';
+import { MicroInfraRepoService } from './services/micro-infra-repo.service';
 import { GithubController } from './controllers/github.controller';
+import { GithubService } from './services/github.service';
+import { VenvService } from '../virtual-env/services/venv.service';
+import { VirtualEnvModule } from '../virtual-env/virtual-env.module';
 
 @Module({
-  imports: [],
-  exports: [MicroInfraApiService, MicroInfraRepoService],
-  providers: [MicroInfraApiService, MicroInfraRepoService],
-  controllers: [GithubController]
-})
+  imports: [forwardRef(() => VirtualEnvModule)],
 
+  exports: [MicroInfraApiService, MicroInfraRepoService, GithubService],
+  providers: [MicroInfraApiService, MicroInfraRepoService, GithubService],
+  controllers: [GithubController],
+})
 export class GithubModule {}

@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {ValidateInputPipe} from "./core/pipes/validate.pipe";
+import { ValidateInputPipe } from './core/pipes/validate.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,6 +9,5 @@ async function bootstrap() {
 
   //app.setGlobalPrefix('api/v1');
   // handle all user input validation globally
-
 }
 bootstrap();

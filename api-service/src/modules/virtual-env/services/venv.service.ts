@@ -1,179 +1,268 @@
-import {Inject, Injectable, NotFoundException} from '@nestjs/common';
-import {Repository} from "typeorm";
-import {InjectRepository} from '@nestjs/typeorm';
-import {CreateVirtualEnvDto} from "../dto/create-virtual-env.dto";
-import {MicroInfraApiService} from "../../github/services/micro-infra-api.service";
-import {VirtualEnv, VirtualEnvStatus} from "../entity/virtual-env.entity";
-import {VirtualEnvService} from "../entity/virtual-env-service.entity";
-import {MicroInfraService} from "../entity/micro-infra-service.entity";
-import {_} from 'lodash'
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateVirtualEnvDto } from '../dto/create-virtual-env.dto';
+import { MicroInfraApiService } from '../../github/services/micro-infra-api.service';
+import { VirtualEnv, VirtualEnvStatus } from '../entity/virtual-env.entity';
+import { VirtualEnvService } from '../entity/virtual-env-service.entity';
+import { MicroInfraService } from '../entity/micro-infra-service.entity';
+import { _ } from 'lodash';
+import { MicroInfraRepoService } from '../../github/services/micro-infra-repo.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { CreateVirtualEnvProcessor } from '../processors/create-virtual-env.processor';
+
 
 @Injectable()
 export class VenvService {
+  private readonly logger = new Logger(VenvService.name);
 
-    constructor(
-        @InjectRepository(VirtualEnv)
-        private virtualEnvRepository: Repository<VirtualEnv>,
-        @Inject(MicroInfraApiService)
-        private microInfraApiService: MicroInfraApiService,
-        @InjectRepository(VirtualEnvService)
-        private virtualEnvServiceRepository: Repository<VirtualEnvService>,
-        @InjectRepository(MicroInfraService)
-        private microInfraServiceRepository: Repository<MicroInfraService>,
-    ) {
+  constructor(
+    @InjectRepository(VirtualEnv)
+    private virtualEnvRepository: Repository<VirtualEnv>,
+    @Inject(MicroInfraApiService)
+    private microInfraApiService: MicroInfraApiService,
+    @InjectRepository(VirtualEnvService)
+    private virtualEnvServiceRepository: Repository<VirtualEnvService>,
+    @InjectRepository(MicroInfraService)
+    private microInfraServiceRepository: Repository<MicroInfraService>,
+
+    @InjectQueue(CreateVirtualEnvProcessor.getQueueName())
+    private virtualEnvQueue: Queue,
+  ) {}
+
+  create = async (data: CreateVirtualEnvDto) => {
+    const servicesEntities = await this.microInfraServiceRepository.find();
+    //const services = await microInfraService.getAllServices();
+    const services = servicesEntities.map((srv) => {
+      return srv.name;
+    });
+
+    // console.log('availableServices', services)
+    // const rules = {
+    //     title: 'string|min:6',
+    // };
+    //
+    // const validateResult = validate(rules, req.body);
+    //
+    // if (validateResult !== true) {
+    //     throw createHttpError(422, validateResult?.[0]?.message);
+    // }
+
+    const virtualEnv = new VirtualEnv();
+
+    virtualEnv.title = data.title;
+    virtualEnv.description = data.description;
+    //virtualEnv.owner = req.body.owner;
+    virtualEnv.user_id = 1 || null;
+    //const githubTagByServiceName = data?.githubTagByServiceName;
+    const githubTagByServiceName = [];
+
+    if (data?.virtualEnvServices) {
+      data?.virtualEnvServices.forEach((v) => {
+        githubTagByServiceName[v.service_name] = v.service_github_tag;
+      });
     }
 
-    create = async (data: CreateVirtualEnvDto) => {
+    const availableServices = [];
+    services.forEach((serviceName) => {
+      availableServices.push(
+        VirtualEnvService.create({
+          service_name: serviceName,
+          service_header:
+            this.microInfraApiService.createServiceHeader(serviceName),
+          service_header_value: virtualEnv.title,
+          service_github_tag: githubTagByServiceName?.[serviceName],
+        }),
+      );
+    });
 
-        const servicesEntities = await this.microInfraServiceRepository.find();
-        //const services = await microInfraService.getAllServices();
-        const services = servicesEntities.map(srv => {
-            return srv.name
-        })
+    virtualEnv.virtualEnvServices = availableServices;
 
-        // console.log('availableServices', services)
-        // const rules = {
-        //     title: 'string|min:6',
-        // };
-        //
-        // const validateResult = validate(rules, req.body);
-        //
-        // if (validateResult !== true) {
-        //     throw createHttpError(422, validateResult?.[0]?.message);
-        // }
+    const result = await this.virtualEnvRepository.save(virtualEnv);
+    return result;
+    //const q = new CreateVirtualEnvQueue().addVirtualEnvQueue(result.id)
+    //return  res.json({ code: 'ok', data: result });
+  };
 
-        const virtualEnv = new VirtualEnv();
+  update = async (id: string, data: CreateVirtualEnvDto) => {
+    const virtualEnv = await this.virtualEnvRepository.findOne({
+      where: { id: id },
+      relations: ['virtualEnvServices', 'user'],
+    });
 
-        virtualEnv.title = data.title;
-        virtualEnv.description = data.description;
-        //virtualEnv.owner = req.body.owner;
-        virtualEnv.user_id = 1 || null
-        //const githubTagByServiceName = data?.githubTagByServiceName;
-        let githubTagByServiceName = []
-
-        if (data?.virtualEnvServices) {
-            data?.virtualEnvServices.forEach(v => {
-                githubTagByServiceName[v.service_name] = v.service_github_tag
-            })
-        }
-
-        let availableServices = [];
-        services.forEach(serviceName => {
-            availableServices.push(VirtualEnvService.create({
-                service_name: serviceName,
-                service_header: this.microInfraApiService.createServiceHeader(serviceName),
-                service_header_value: virtualEnv.title,
-                service_github_tag: githubTagByServiceName?.[serviceName]
-            }))
-        });
-
-        virtualEnv.virtualEnvServices = availableServices;
-
-        const result = await this.virtualEnvRepository.save(virtualEnv);
-        return result;
-        //const q = new CreateVirtualEnvQueue().addVirtualEnvQueue(result.id)
-        //return  res.json({ code: 'ok', data: result });
+    if (!virtualEnv) {
+      throw new NotFoundException(`Virtual env with ID:${id} not found.`);
     }
 
-    update = async (id: string, data: CreateVirtualEnvDto) => {
+    virtualEnv.title = data.title || virtualEnv.title;
+    virtualEnv.status = VirtualEnvStatus.WAIT_PR;
 
-        const virtualEnv = await this.virtualEnvRepository.findOne({
-            where: {id: id},
-            relations: ['virtualEnvServices', 'user'],
-        });
+    virtualEnv.virtualEnvServices.map((item) => {
+      const newValue = _.find(data.virtualEnvServices, ['id', item.id]);
+      if (newValue) {
+        const tag = Object.prototype.hasOwnProperty.call(
+          newValue,
+          'service_github_tag',
+        )
+          ? newValue.service_github_tag
+          : item.service_github_tag;
+        console.log('!!!.tag', tag);
+        item.service_github_tag = tag;
+        item.is_enable = newValue.is_enable || item.is_enable;
+      }
+    });
 
-        if (!virtualEnv) {
-            throw new NotFoundException(`Virtual env with ID:${id} not found.`)
-        }
+    //WsClient.send({ id: virtualEnv.id, data:virtualEnv });
+    // console.log(virtualEnv.virtualEnvServices, req.body.virtualEnvServices)
+    //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
 
-        virtualEnv.title = data.title || virtualEnv.title
-        virtualEnv.status = VirtualEnvStatus.WAIT_PR
+    const result = await this.virtualEnvRepository.save(virtualEnv);
+    // const q = new UpdateVirtualEnvQueue().updateVirtualEnvQueue(result.id)
+    // const msg = new SendWsQueue().send({
+    //     data: virtualEnv,
+    //     type: MessageTypes.updateVirtualEnv
+    //
+    // })
+    return result;
+  };
 
-        virtualEnv.virtualEnvServices.map(item => {
-            const newValue = _.find(data.virtualEnvServices, ['id', item.id])
-            if (newValue) {
-                const tag = Object.prototype.hasOwnProperty.call(newValue, 'service_github_tag')
-                    ? newValue.service_github_tag
-                    : item.service_github_tag;
-                console.log('!!!.tag', tag);
-                item.service_github_tag = tag;
-                item.is_enable = newValue.is_enable || item.is_enable
-            }
-        });
+  delete = async (id: string) => {
+    const virtualEnv = await this.virtualEnvRepository.findOne({
+      where: { id: id },
+    });
 
-        //WsClient.send({ id: virtualEnv.id, data:virtualEnv });
-        // console.log(virtualEnv.virtualEnvServices, req.body.virtualEnvServices)
-        //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
-
-        const result = await this.virtualEnvRepository.save(virtualEnv);
-        // const q = new UpdateVirtualEnvQueue().updateVirtualEnvQueue(result.id)
-        // const msg = new SendWsQueue().send({
-        //     data: virtualEnv,
-        //     type: MessageTypes.updateVirtualEnv
-        //
-        // })
-        return result
+    if (!virtualEnv) {
+      throw new NotFoundException(`Virtual env with ID:${id} not found.`);
     }
 
-    delete = async (id: string) => {
+    virtualEnv.status = VirtualEnvStatus.WAIT_DELETE;
+    const result = await this.virtualEnvRepository.save(virtualEnv);
+    //const q = new DeleteVirtualEnvQueue().deleteVirtualEnvQueue(result.id)
+    // await virtualEnvRepository.delete({
+    //     id: req.params.id
+    // })
+    return result;
+  };
 
-        const virtualEnv = await this.virtualEnvRepository.findOne({
-            where: {id: id}
-        });
+  findAll = async (search?: string, limit?: number, offset?: number) => {
+    const take = limit || 10;
+    const skip = offset || 0;
 
-        if (!virtualEnv) {
-            throw new NotFoundException(`Virtual env with ID:${id} not found.`)
-        }
+    const [data, count] = await this.virtualEnvRepository.findAndCount({
+      cache: false,
+      skip: skip * take,
+      take: take,
+      order: {
+        id: 'DESC',
+      },
+      relations: ['virtualEnvServices', 'user'],
+    });
 
-        virtualEnv.status = VirtualEnvStatus.WAIT_DELETE
-        const result = await this.virtualEnvRepository.save(virtualEnv);
-        //const q = new DeleteVirtualEnvQueue().deleteVirtualEnvQueue(result.id)
-        // await virtualEnvRepository.delete({
-        //     id: req.params.id
-        // })
-        return result
+    const totalPages = Math.ceil(count / take);
+    const currentPage = Math.ceil(count % take);
 
+    return {
+      total: count,
+      count: data.length,
+      pages: totalPages,
+      currentPage: currentPage,
+      data: data,
+    };
+  };
 
+  findById = async (id: number) => {
+    const virtualEnv = await this.virtualEnvRepository.findOne({
+      where: { id: id },
+      relations: ['virtualEnvServices', 'user'],
+    });
+
+    if (!virtualEnv) {
+      throw new NotFoundException(`Virtual env with ID:${id} not found.`);
     }
 
-    findAll = async (search?: string, limit?: number, offset?: number) => {
+    await this.virtualEnvQueue.add('create', { data: 'ssa' });
 
-        const take = limit || 10;
-        const skip = offset || 0;
+    return virtualEnv;
+  };
 
-        const [data, count] = await this.virtualEnvRepository.findAndCount({
-            cache: false,
-            skip: skip * take,
-            take: take,
-            order: {
-                id: "DESC"
-            },
-            relations: ['virtualEnvServices', 'user'],
+  importAllServices = async () => {
+    this.logger.debug('Called when the current second is 45');
 
-        });
+    const infraRepoService = new MicroInfraRepoService();
+    await infraRepoService.getRepo(process.env.GITHUB_REPO_BRANCH);
+    const gitServices = await infraRepoService.getAllServices();
 
-        const totalPages = Math.ceil(count / take)
-        const currentPage = Math.ceil(count % take)
+    const valuesMap = gitServices.map((srv) => {
+      return infraRepoService.getServiceDefaultValue(srv);
+    });
 
-        return {
-            total: count,
-            count: data.length,
-            pages: totalPages,
-            currentPage: currentPage,
-            data: data
-        }
-    }
+    const values = await Promise.all(valuesMap);
 
-    findById = async (id: number) => {
-        const virtualEnv = await this.virtualEnvRepository.findOne({
-            where: {id: id},
-            relations: ['virtualEnvServices', 'user'],
-        });
+    const serviceValues = values.map((v, i) => {
+      return this.microInfraServiceRepository.create({
+        name: gitServices[i],
+        repository: v.image.repository,
+        default_tag: v.image.tag,
+      });
+    });
 
-        if (!virtualEnv) {
-            throw new NotFoundException(`Virtual env with ID:${id} not found.`)
-        }
+    const result = await this.microInfraServiceRepository.save(serviceValues);
+    return result;
+  };
 
-        return virtualEnv
-    }
+  async getAvailableService(limit?: number, offset?: number) {
+
+      const take = limit || 100;
+      const skip = offset || 0;
+
+      const [data, count] = await this.microInfraServiceRepository.findAndCount({
+          cache:false,
+          skip: skip * take,
+          take: take,
+          order: {
+              name: "DESC"
+          },
+      });
+
+      const totalPages = Math.ceil(count / take)
+      const currentPage = Math.ceil(count % take)
+
+      return {
+          total: count,
+          count: data.length,
+          pages: totalPages,
+          currentPage: currentPage,
+          data: data
+      }
+  }
+
+  find = async (
+    args?: object,
+    search?: string,
+    limit?: number,
+    offset?: number,
+  ) => {
+    const take = limit || 100;
+    const skip = offset || 0;
+
+    const [data, count] = await this.virtualEnvRepository.findAndCount({
+      ...args,
+      cache: false,
+      skip: skip * take,
+      take: take,
+    });
+
+    const totalPages = Math.ceil(count / take);
+    const currentPage = Math.ceil(count % take);
+
+    return {
+      total: count,
+      count: data.length,
+      pages: totalPages,
+      currentPage: currentPage,
+      data: data,
+    };
+  };
 }

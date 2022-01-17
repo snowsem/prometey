@@ -1,19 +1,27 @@
-import { Injectable, ArgumentMetadata, BadRequestException, ValidationPipe, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  ArgumentMetadata,
+  BadRequestException,
+  ValidationPipe,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 @Injectable()
 export class ValidateInputPipe extends ValidationPipe {
-    public async transform(value, metadata: ArgumentMetadata) {
-        try {
-            return await super.transform(value, metadata);
-        } catch (e) {
-            if (e instanceof BadRequestException) {
-                console.log(value, metadata)
-                throw new UnprocessableEntityException(this.handleError(e.getResponse()));
-            }
-        }
+  public async transform(value, metadata: ArgumentMetadata) {
+    try {
+      return await super.transform(value, metadata);
+    } catch (e) {
+      if (e instanceof BadRequestException) {
+        console.log(value, metadata);
+        throw new UnprocessableEntityException(
+          this.handleError(e.getResponse()),
+        );
+      }
     }
+  }
 
-    private handleError(errors) {
-        return errors.message.map(error => error);
-    }
+  private handleError(errors) {
+    return errors.message.map((error) => error);
+  }
 }
