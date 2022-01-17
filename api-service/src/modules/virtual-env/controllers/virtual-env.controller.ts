@@ -1,6 +1,6 @@
-import {Body, Controller, Get, Post, Query, Param} from '@nestjs/common';
+import {Body, Controller, Get, Post, Query, Param, Delete, HttpCode, Patch} from '@nestjs/common';
 import {VenvService} from "../services/venv.service";
-import {PaginationParams} from "../../types/PaginationParams";
+import {PaginationParams} from "../../../types/PaginationParams";
 import {CreateVirtualEnvDto} from "../dto/create-virtual-env.dto";
 import {MicroInfraApiService} from "../../github/services/micro-infra-api.service";
 
@@ -41,5 +41,19 @@ export class VirtualEnvController {
     )
     {
         return this.virtualEnvService.create(virtualEnv);
+    }
+
+    @Delete(':id')
+    @HttpCode(204)
+    public delete(
+        @Param('id') id: string
+    )
+    {
+        return this.virtualEnvService.delete(id);
+    }
+
+    @Patch(':id')
+    public update(@Param('id') id, @Body() virtualEnv: CreateVirtualEnvDto ) {
+        return this.virtualEnvService.update(id, virtualEnv)
     }
 }

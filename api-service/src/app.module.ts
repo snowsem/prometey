@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { VirtualEnvModule } from './virtual-env/virtual-env.module';
+import { VirtualEnvModule } from './modules/virtual-env/virtual-env.module';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {ConfigModule} from "@nestjs/config";
 import {typeOrmConfig} from "./configs";
-import { GithubModule } from './github/github.module';
+import { GithubModule } from './modules/github/github.module';
+import {BullModule} from "@nestjs/bull";
 
 @Module({
   imports: [
@@ -32,6 +33,13 @@ import { GithubModule } from './github/github.module';
               "migrationsDir": "database/migrations",
               "subscribersDir": "src/subscriber"
           }
+      }
+      ),
+      BullModule.forRoot({
+          redis: {
+              host: process.env.REDIS_HOST || 'localhost',
+              port: 6379,
+          },
       }),
   ],
   controllers: [AppController],
