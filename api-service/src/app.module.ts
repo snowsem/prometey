@@ -23,6 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       database: process.env.DB_NAME,
       logging: false,
       autoLoadEntities: true,
+      synchronize:true,
       entities: ['dist/**/*.entity{.ts,.js}'],
       migrations: ['database/migrations/**/*.js'],
       subscribers: ['src/subscriber/**/*.ts'],

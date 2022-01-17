@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { VenvService } from './services/venv.service';
 import { VirtualEnvController } from './controllers/virtual-env.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,7 +13,7 @@ import { CreateVirtualEnvProcessor } from './processors/create-virtual-env.proce
 
 @Module({
   imports: [
-    GithubModule,
+    forwardRef(() => GithubModule),
     BullModule.registerQueue({
       name: 'virtualEnvQueue',
     }),

@@ -55,7 +55,7 @@ export class VenvService {
     virtualEnv.title = data.title;
     virtualEnv.description = data.description;
     //virtualEnv.owner = req.body.owner;
-    virtualEnv.user_id = 1 || null;
+    virtualEnv.user_id = null;
     //const githubTagByServiceName = data?.githubTagByServiceName;
     const githubTagByServiceName = [];
 
@@ -81,7 +81,9 @@ export class VenvService {
     virtualEnv.virtualEnvServices = availableServices;
 
     const result = await this.virtualEnvRepository.save(virtualEnv);
+    await this.virtualEnvQueue.add('create', result.id)
     return result;
+
     //const q = new CreateVirtualEnvQueue().addVirtualEnvQueue(result.id)
     //return  res.json({ code: 'ok', data: result });
   };
@@ -181,8 +183,6 @@ export class VenvService {
     if (!virtualEnv) {
       throw new NotFoundException(`Virtual env with ID:${id} not found.`);
     }
-
-    await this.virtualEnvQueue.add('create', { data: 'ssa' });
 
     return virtualEnv;
   };
