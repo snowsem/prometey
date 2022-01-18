@@ -23,6 +23,7 @@ export const getToken = ()=>{
     const token = localStorage.getItem('auth_token');
     return token;
 }
+
 class App extends Component {
 
     constructor(props) {
@@ -36,7 +37,7 @@ class App extends Component {
         console.log('success');
 
         this.api = axios.create({
-            baseURL: 'http://localhost:8888/',
+            baseURL: 'http://localhost:8888/api/v1/',
             timeout: 5000,
             //headers: {'X-Custom-Header': 'foobar'}
         })

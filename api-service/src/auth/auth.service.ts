@@ -1,14 +1,16 @@
-import {forwardRef, Inject, Injectable} from '@nestjs/common';
+import {forwardRef, Inject, Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "./entity/user.entity";
 import {Repository} from "typeorm";
 import { OAuth2Client } from "google-auth-library";
+import {JwtService} from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
 
     constructor(
-        @InjectRepository(User) private userRepository: Repository<User>
+        @InjectRepository(User) private userRepository: Repository<User>,
+        @Inject(JwtService) private jwtService: JwtService
     ) {}
 
     findOneById = (id: string)=>{
@@ -19,43 +21,55 @@ export class AuthService {
         })
     }
 
-    authenticateUserByGoogle = async ()=>{
-        // const googleClient = new OAuth2Client({
-        //     clientId: `${process.env.GOOGLE_CLIENT_ID}`,
-        // });
-        //
-        // const { token } = req.body;
-        //
-        // const ticket = await googleClient.verifyIdToken({
-        //     idToken: token,
-        //     audience: `${process.env.GOOGLE_CLIENT_ID}`,
-        //     audient: `${process.env.GOOGLE_CLIENT_ID}`,
-        // });
-        //
-        // const userRepo = getRepository(User);
-        //
-        // const payload = ticket.getPayload();
-        //
-        // let user = await User.findOne({ email: payload?.email });
-        //
-        // const _token = jwt.sign(
-        //     { user_id: user.id, user_email: user.email, token_google: token },
-        //     process.env.TOKEN_KEY,
-        //     {
-        //         expiresIn: "30d",
-        //     }
-        // );
-        //
-        // if (!user) {
-        //     user = new User()
-        //     user.email = payload?.email
-        //     user.avatar = payload?.picture
-        //     user.first_name = payload?.name
-        //     user.token_google = token
-        //     user.token = _token;
-        //
-        //     await userRepo.save(user);
-        // }
+    findOneByEmail = (email: string)=>{
+        return this.userRepository.findOne({
+            where: {
+                user_email: email
+            }
+        })
+    }
+
+    authenticateUserByGoogle = async (token: string)=>{
+        const googleClient = new OAuth2Client({
+            clientId: `${process.env.GOOGLE_CLIENT_ID}`,
+        });
+
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: `${process.env.GOOGLE_CLIENT_ID}`,
+            // @ts-ignore
+            audient: `${process.env.GOOGLE_CLIENT_ID}`,
+        });
+        console.log(ticket)
+
+        if (!ticket) {
+            throw new UnauthorizedException('Cant auth by Google oath')
+        }
+
+        // @ts-ignore
+        const payload = ticket.getPayload();
+
+        let user = await User.findOne({ email: payload?.email });
+
+        if (!user) {
+            user = new User()
+            user.email = payload?.email
+            user.avatar = payload?.picture
+            user.first_name = payload?.given_name
+            user.last_name = payload?.family_name
+            user.token_google = token
+            user = await this.userRepository.save(user);
+        }
+
+        const _token = this.jwtService.sign({ email: user.email, sub: user.id });
+        return {user: user, token: _token}
+    }
+
+    async login(user: any) {
+        const payload = { email: user.email, sub: user.id };
+        return {
+            access_token: this.jwtService.sign(payload),
+        };
     }
 
     me = async ()=>{

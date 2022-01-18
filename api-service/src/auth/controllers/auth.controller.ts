@@ -1,5 +1,7 @@
-import {Controller, Get, Inject, Post} from '@nestjs/common';
+import {Body, Controller, Get, Inject, Post, UseGuards} from '@nestjs/common';
 import {AuthService} from "../auth.service";
+import {AuthUserByGooglePayloadDto} from "../dto/auth-user-by-google-payload.dto";
+import {JwtAuthGuard} from "../jwt-auth.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -8,12 +10,13 @@ export class AuthController {
     ) {}
 
     @Get('/me')
+    @UseGuards(JwtAuthGuard)
     public getMe(){
         return this.authService.me();
     }
 
     @Post('/google')
-    public authenticateUserByGoogle() {
-
+    public authenticateUserByGoogle(@Body() req: AuthUserByGooglePayloadDto) {
+        return this.authService.authenticateUserByGoogle(req.token)
     }
 }

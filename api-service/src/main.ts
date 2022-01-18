@@ -5,6 +5,7 @@ import { ValidateInputPipe } from './core/pipes/validate.pipe';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidateInputPipe());
+  app.enableCors()
   app.setGlobalPrefix('api/v1');
   await app.listen(process.env.APP_PORT || 3001);
 }
