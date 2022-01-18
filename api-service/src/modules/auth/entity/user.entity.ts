@@ -15,7 +15,7 @@ import {
 
 import { JoinTable } from 'typeorm/browser';
 import { VirtualEnv } from '../../virtual-env/entity/virtual-env.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import {ApiHideProperty, ApiProperty} from '@nestjs/swagger';
 
 @Entity()
 export class User extends BaseEntity {
@@ -47,7 +47,8 @@ export class User extends BaseEntity {
   @Column({
     nullable: true,
   })
-  @ApiProperty()
+
+  @ApiHideProperty()
   login: string;
 
   @Column({
@@ -60,6 +61,7 @@ export class User extends BaseEntity {
     nullable: true,
     select: false,
   })
+  @ApiHideProperty()
   password: string;
 
   @Column({
@@ -85,6 +87,6 @@ export class User extends BaseEntity {
   updated_at: number;
 
   @OneToMany(() => VirtualEnv, '')
-  @ApiProperty()
+  @ApiHideProperty()
   virtualEnvs: VirtualEnv[];
 }

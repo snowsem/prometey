@@ -5,6 +5,7 @@ import { VirtualEnvStatus } from '../../virtual-env/entity/virtual-env.entity';
 import { stringify as yamlStr } from 'yaml';
 import { base64encode } from 'nodejs-base64';
 import { VenvService } from '../../virtual-env/services/venv.service';
+import {WebsocketClient} from "../../websocket/websocket.client";
 
 @Injectable()
 export class GithubService {
@@ -17,6 +18,9 @@ export class GithubService {
 
     @Inject(forwardRef(() => VenvService))
     private venvService: VenvService,
+
+    @Inject(WebsocketClient)
+    private wsClient: WebsocketClient
   ) {}
 
   createBranch = async (envs = []) => {

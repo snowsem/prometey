@@ -10,7 +10,7 @@ import { MicroInfraService } from './entity/micro-infra-service.entity';
 import { VenvCronService } from './services/venv-cron.service';
 import { BullModule } from '@nestjs/bull';
 import { CreateVirtualEnvProcessor } from './processors/create-virtual-env.processor';
-import { AuthModule } from '../auth/auth.module';
+import {WebsocketModule} from "../websocket/websocket.module";
 
 @Module({
   imports: [

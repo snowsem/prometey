@@ -15,6 +15,7 @@ import { PaginationParams } from '../../../types/PaginationParams';
 import { CreateVirtualEnvDto } from '../dto/create-virtual-env.dto';
 import { MicroInfraApiService } from '../../github/services/micro-infra-api.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import {VirtualEnvListType} from '../../../types/virtual-env-list.type'
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -45,7 +46,7 @@ export class VirtualEnvController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @ApiOkResponse({ type: [VirtualEnv] })
+  @ApiOkResponse({ type: [VirtualEnvListType] })
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'offset', required: false })
   @ApiQuery({ name: 'search', required: false })

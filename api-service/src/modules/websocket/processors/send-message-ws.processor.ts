@@ -8,6 +8,7 @@ import {
 } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
 import { _ } from 'lodash';
+import {WebsocketClient} from "../websocket.client";
 
 @Injectable()
 @Processor(SendMessageWsProcessor.getQueueName())
@@ -22,6 +23,8 @@ export class SendMessageWsProcessor {
   constructor(
     @InjectQueue(SendMessageWsProcessor.getQueueName())
     private readonly queue: Queue,
+    @Inject(WebsocketClient)
+    private wsClient: WebsocketClient
   ) {}
 
   public async add(data) {
@@ -29,7 +32,9 @@ export class SendMessageWsProcessor {
   }
 
   @Process()
-  public async send(job: Job<unknown>) {}
+  public async send(job: Job<unknown>) {
+
+  }
 
   @OnQueueCompleted()
   public success(job: Job, result: any) {

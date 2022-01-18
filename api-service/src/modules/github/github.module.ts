@@ -5,9 +5,13 @@ import { GithubController } from './controllers/github.controller';
 import { GithubService } from './services/github.service';
 import { VenvService } from '../virtual-env/services/venv.service';
 import { VirtualEnvModule } from '../virtual-env/virtual-env.module';
+import {WebsocketModule} from "../websocket/websocket.module";
 
 @Module({
-  imports: [forwardRef(() => VirtualEnvModule)],
+  imports: [
+      forwardRef(() => VirtualEnvModule),
+      WebsocketModule
+  ],
 
   exports: [MicroInfraApiService, MicroInfraRepoService, GithubService],
   providers: [MicroInfraApiService, MicroInfraRepoService, GithubService],

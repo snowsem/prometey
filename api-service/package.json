@@ -34,6 +34,7 @@
     "@nestjs/typeorm": "^8.0.3",
     "@nestjs/websockets": "^8.2.5",
     "@types/socket.io": "^3.0.2",
+    "@types/socket.io-client": "^3.0.0",
     "adm-zip": "^0.5.9",
     "assert": "^2.0.0",
     "bcrypt": "^5.0.1",
@@ -43,6 +44,7 @@
     "crypto": "^1.0.1",
     "google-auth-library": "^7.11.0",
     "lodash": "^4.17.21",
+    "nestjs-socket.io-client": "^1.0.6",
     "nodejs-base64": "^2.0.0",
     "octokit": "^1.7.1",
     "passport": "^0.5.2",
@@ -52,6 +54,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "socket.io-client": "^4.4.1",
     "swagger-ui-express": "^4.3.0",
     "typeorm": "^0.2.41",
     "yaml": "^1.10.2"
