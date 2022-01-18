@@ -9,11 +9,14 @@ import { GithubModule } from './modules/github/github.module';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
+import {PassportModule} from "@nestjs/passport";
+import {JwtModule} from "@nestjs/jwt";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     VirtualEnvModule,
+    PassportModule,
     ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
