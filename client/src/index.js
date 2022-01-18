@@ -2,8 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import 'antd/dist/antd.css';
+
 import reportWebVitals from './reportWebVitals';
+
+import 'antd/dist/antd.css';
+import 'dotenv/config';
 
 ReactDOM.render(
   <React.StrictMode>
