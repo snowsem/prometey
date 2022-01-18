@@ -12,6 +12,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { CreateVirtualEnvProcessor } from '../processors/create-virtual-env.processor';
+import {SendMessageWsProcessor} from "../../websocket/processors/send-message-ws.processor";
+import {MessageTypes} from "../../websocket/websocket.client";
 
 @Injectable()
 export class VenvService {
@@ -26,9 +28,10 @@ export class VenvService {
     private virtualEnvServiceRepository: Repository<VirtualEnvService>,
     @InjectRepository(MicroInfraService)
     private microInfraServiceRepository: Repository<MicroInfraService>,
-
     @InjectQueue(CreateVirtualEnvProcessor.getQueueName())
     private virtualEnvQueue: Queue,
+    @Inject(SendMessageWsProcessor)
+    private sendMessageQueue:SendMessageWsProcessor,
   ) {}
 
   create = async (data: CreateVirtualEnvDto) => {
@@ -37,17 +40,6 @@ export class VenvService {
     const services = servicesEntities.map((srv) => {
       return srv.name;
     });
-
-    // console.log('availableServices', services)
-    // const rules = {
-    //     title: 'string|min:6',
-    // };
-    //
-    // const validateResult = validate(rules, req.body);
-    //
-    // if (validateResult !== true) {
-    //     throw createHttpError(422, validateResult?.[0]?.message);
-    // }
 
     const virtualEnv = new VirtualEnv();
 
@@ -81,8 +73,12 @@ export class VenvService {
 
     const result = await this.virtualEnvRepository.save(virtualEnv);
     await this.virtualEnvQueue.add('create', result.id);
-    return result;
+    this.sendMessageQueue.sendBroadcast({
+      data: virtualEnv,
+      type: MessageTypes.updateVirtualEnv
 
+    })
+    return result;
     //const q = new CreateVirtualEnvQueue().addVirtualEnvQueue(result.id)
     //return  res.json({ code: 'ok', data: result });
   };
@@ -120,6 +116,11 @@ export class VenvService {
     //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
 
     const result = await this.virtualEnvRepository.save(virtualEnv);
+    this.sendMessageQueue.sendBroadcast({
+          data: virtualEnv,
+          type: MessageTypes.updateVirtualEnv
+
+      })
     // const q = new UpdateVirtualEnvQueue().updateVirtualEnvQueue(result.id)
     // const msg = new SendWsQueue().send({
     //     data: virtualEnv,

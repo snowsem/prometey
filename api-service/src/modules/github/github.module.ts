@@ -10,7 +10,7 @@ import {WebsocketModule} from "../websocket/websocket.module";
 @Module({
   imports: [
       forwardRef(() => VirtualEnvModule),
-      WebsocketModule
+      WebsocketModule,
   ],
 
   exports: [MicroInfraApiService, MicroInfraRepoService, GithubService],

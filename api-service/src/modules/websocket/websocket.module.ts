@@ -9,7 +9,7 @@ import {WebsocketClient} from "./websocket.client";
       name: SendMessageWsProcessor.getQueueName(),
     }),
   ],
-  exports: [WebsocketClient],
+  exports: [WebsocketClient, SendMessageWsProcessor],
   providers: [WebsocketGateway, SendMessageWsProcessor, WebsocketClient],
 })
 export class WebsocketModule {}

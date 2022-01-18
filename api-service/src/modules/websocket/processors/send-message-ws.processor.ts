@@ -8,7 +8,7 @@ import {
 } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
 import { _ } from 'lodash';
-import {WebsocketClient} from "../websocket.client";
+import {MessageImpl, WebsocketClient} from "../websocket.client";
 
 @Injectable()
 @Processor(SendMessageWsProcessor.getQueueName())
@@ -31,22 +31,37 @@ export class SendMessageWsProcessor {
     await this.queue.add(data);
   }
 
-  @Process()
-  public async send(job: Job<unknown>) {
+  public async sendBroadcast(msg: MessageImpl){
+    this.logger.debug('Send Broadcast')
+    await this.queue.add('broadcast', msg, { removeOnComplete: true})
+  }
 
+  public async sendMessage(msg: MessageImpl){
+    this.logger.debug('Send Message')
+    await this.queue.add('message', msg, { removeOnComplete: true})
+  }
+
+  @Process('broadcast')
+  public async handleBroadcast(job: Job<unknown>) {
+    await this.wsClient.sendBroadcast(_.get(job, 'data'))
+  }
+
+  @Process('message')
+  public async handleMessage(job: Job<unknown>) {
+    await this.wsClient.sendMessage(_.get(job, 'data'))
   }
 
   @OnQueueCompleted()
   public success(job: Job, result: any) {
     this.logger.debug(
-      `Completed: ${JSON.stringify(job)} ${JSON.stringify(result)}`,
+      `Completed: ${JSON.stringify(job.name)} ${JSON.stringify(job.id)} ${JSON.stringify(result)}`,
     );
   }
 
   @OnQueueFailed()
   public failed(job: Job, err: Error) {
     this.logger.error(
-      `Error Job: ${JSON.stringify(job)} ${JSON.stringify(err)}`,
+      `Error Job:${JSON.stringify(job.name)} ${JSON.stringify(job.id)} ${JSON.stringify(job)} ${JSON.stringify(err)}`,
     );
   }
 }

@@ -5,6 +5,7 @@ import {JwtAuthGuard} from '../jwt-auth.guard';
 import {CurrentUser} from '../current-user.decorator';
 import {ApiBearerAuth, ApiOkResponse, ApiSecurity, ApiTags,} from '@nestjs/swagger';
 import {User} from '../entity/user.entity';
+import {SendMessageWsProcessor} from "../../websocket/processors/send-message-ws.processor";
 
 @Controller('auth')
 @ApiTags('auth')
