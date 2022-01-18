@@ -33,7 +33,7 @@
     "adm-zip": "^0.5.9",
     "assert": "^2.0.0",
     "bcrypt": "^5.0.1",
-    "bull": "^4.2.1",
+    "bull": "^3.29.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "crypto": "^1.0.1",
