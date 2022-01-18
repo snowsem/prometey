@@ -7,12 +7,13 @@ import {
   Param,
   Delete,
   HttpCode,
-  Patch,
+  Patch, UseGuards,
 } from '@nestjs/common';
 import { VenvService } from '../services/venv.service';
 import { PaginationParams } from '../../../types/PaginationParams';
 import { CreateVirtualEnvDto } from '../dto/create-virtual-env.dto';
 import { MicroInfraApiService } from '../../github/services/micro-infra-api.service';
+import {JwtAuthGuard} from "../../../auth/jwt-auth.guard";
 
 @Controller('virtual-env')
 export class VirtualEnvController {
@@ -27,11 +28,13 @@ export class VirtualEnvController {
   }
 
   @Get('/get-services')
+  @UseGuards(JwtAuthGuard)
   public getServices() {
     return this.virtualEnvService.getAvailableService()
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   public index(
     @Query('search') search: string,
     @Query() { offset, limit }: PaginationParams,
@@ -40,22 +43,26 @@ export class VirtualEnvController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   public show(@Param('id') id: string) {
     return this.virtualEnvService.findById(+id);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   public create(@Body() virtualEnv: CreateVirtualEnvDto) {
     return this.virtualEnvService.create(virtualEnv);
   }
 
   @Delete(':id')
   @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
   public delete(@Param('id') id: string) {
     return this.virtualEnvService.delete(id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   public update(@Param('id') id, @Body() virtualEnv: CreateVirtualEnvDto) {
     return this.virtualEnvService.update(id, virtualEnv);
   }
