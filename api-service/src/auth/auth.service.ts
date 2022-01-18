@@ -40,7 +40,6 @@ export class AuthService {
             // @ts-ignore
             audient: `${process.env.GOOGLE_CLIENT_ID}`,
         });
-        console.log(ticket)
 
         if (!ticket) {
             throw new UnauthorizedException('Cant auth by Google oath')
@@ -61,12 +60,12 @@ export class AuthService {
             user = await this.userRepository.save(user);
         }
 
-        const _token = this.jwtService.sign({ email: user.email, sub: user.id });
+        const _token = this.jwtService.sign({ email: user.email, id: user.id });
         return {user: user, token: _token}
     }
 
     async login(user: any) {
-        const payload = { email: user.email, sub: user.id };
+        const payload = { email: user.email, id: user.id };
         return {
             access_token: this.jwtService.sign(payload),
         };
