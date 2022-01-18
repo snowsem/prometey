@@ -13,7 +13,7 @@ export class AuthController {
     @Get('/me')
     @UseGuards(JwtAuthGuard)
     public getMe(@CurrentUser() user){
-        return this.authService.findById(user.id)
+        return this.authService.findOneById(user.id)
     }
 
     @Post('/google')

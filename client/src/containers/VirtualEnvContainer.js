@@ -73,7 +73,7 @@ export class VirtualEnvContainer extends Component {
         this.setState((state)=>{
             return {isLoading:true}
         });
-        const response = await this.api.get(`/virtual_env?${queryParams.toString()}`)
+        const response = await this.api.get(`/virtual-env?${queryParams.toString()}`)
         this.setState(()=>{
             return {virtualEnv: response.data, isLoading:false}
         });
@@ -169,7 +169,7 @@ export class VirtualEnvContainer extends Component {
         this.setState((state)=>{
             return {isLoading:true}
         });
-        const data = await this.api.get(`/virtual_env/${id}`);
+        const data = await this.api.get(`/virtual-env/${id}`);
         console.log('!!!.data', data);
         this.setState(()=>{
             return {showEditModal: true, editModalData: data.data.data, isLoading:false}
@@ -203,7 +203,7 @@ export class VirtualEnvContainer extends Component {
                     visible={this.state.idToDelete !== null}
                     onOkHandler={async () => {
                         const id = this.state.idToDelete;
-                        const url = `http://localhost:8888/virtual_env/${id}`;
+                        const url = `http://localhost:8888/virtual-env/${id}`;
                         try {
                             const resp = await fetch(url, {
                                 method: 'DELETE',
