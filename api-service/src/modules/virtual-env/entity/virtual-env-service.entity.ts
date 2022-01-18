@@ -14,7 +14,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { VirtualEnv } from './virtual-env.entity';
-import {ApiProperty} from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 @Unique('uniq_pair', ['service_name', 'virtual_env_id'])

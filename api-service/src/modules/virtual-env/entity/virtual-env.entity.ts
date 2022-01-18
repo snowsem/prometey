@@ -13,7 +13,7 @@ import {
 
 import { VirtualEnvService } from './virtual-env-service.entity';
 import { User } from '../../auth/entity/user.entity';
-import {ApiProperty} from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum VirtualEnvStatus {
   PENDING = 'pending',

@@ -4,14 +4,11 @@ import { AppService } from './app.service';
 import { VirtualEnvModule } from './modules/virtual-env/virtual-env.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { typeOrmConfig } from './configs';
-import { GithubModule } from './modules/github/github.module';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './modules/auth/auth.module';
-import {PassportModule} from "@nestjs/passport";
+import { PassportModule } from '@nestjs/passport';
 import { WebsocketModule } from './modules/websocket/websocket.module';
-import {WebsocketGateway} from "./modules/websocket/websocket.gateway";
 
 @Module({
   imports: [
@@ -28,7 +25,7 @@ import {WebsocketGateway} from "./modules/websocket/websocket.gateway";
       database: process.env.DB_NAME,
       logging: false,
       autoLoadEntities: true,
-      synchronize:true,
+      synchronize: true,
       entities: ['dist/**/*.entity{.ts,.js}'],
       migrations: ['database/migrations/**/*.js'],
       subscribers: ['src/subscriber/**/*.ts'],

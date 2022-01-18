@@ -10,7 +10,9 @@ import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 
 @WebSocketGateway({ cors: true })
-export class WebsocketGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class WebsocketGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -18,12 +20,18 @@ export class WebsocketGateway implements OnGatewayInit, OnGatewayConnection, OnG
 
   @SubscribeMessage('message')
   handleMessage(client: Socket, payload: string): void {
-    this.server.emit('broadcast', payload);
+    this.logger.debug(`message ${payload}`);
+    //this.server.emit('message', payload);
+  }
+
+  @SubscribeMessage('broadcast')
+  handleBroadcast(client: Socket, payload: string): void {
+    this.logger.debug(`broadcast ${payload}`);
+    this.server.sockets.emit('broadcast', payload);
   }
 
   afterInit(server: Server) {
     this.logger.debug(`${WebsocketGateway.name} init`);
-    this.server.emit('broadcast', 'hello world');
   }
 
   handleDisconnect(client: Socket) {
@@ -34,5 +42,4 @@ export class WebsocketGateway implements OnGatewayInit, OnGatewayConnection, OnG
     this.logger.log(`Client connected: ${client.id}`);
     this.server.sockets.emit('broadcast', 'hello world');
   }
-
 }

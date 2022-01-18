@@ -301,10 +301,8 @@ export class MicroInfraApiService {
       head: youBranch,
     });
 
-    return r
+    return r;
   };
-
-
 
   // getTree = async ()=>{
   //     const { data } = await this.api.rest.repos.getContent({...this.repoSetting, path: ``});

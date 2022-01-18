@@ -13,7 +13,6 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { CreateVirtualEnvProcessor } from '../processors/create-virtual-env.processor';
 
-
 @Injectable()
 export class VenvService {
   private readonly logger = new Logger(VenvService.name);
@@ -81,7 +80,7 @@ export class VenvService {
     virtualEnv.virtualEnvServices = availableServices;
 
     const result = await this.virtualEnvRepository.save(virtualEnv);
-    await this.virtualEnvQueue.add('create', result.id)
+    await this.virtualEnvQueue.add('create', result.id);
     return result;
 
     //const q = new CreateVirtualEnvQueue().addVirtualEnvQueue(result.id)
@@ -213,29 +212,28 @@ export class VenvService {
   };
 
   async getAvailableService(limit?: number, offset?: number) {
+    const take = limit || 100;
+    const skip = offset || 0;
 
-      const take = limit || 100;
-      const skip = offset || 0;
+    const [data, count] = await this.microInfraServiceRepository.findAndCount({
+      cache: false,
+      skip: skip * take,
+      take: take,
+      order: {
+        name: 'DESC',
+      },
+    });
 
-      const [data, count] = await this.microInfraServiceRepository.findAndCount({
-          cache:false,
-          skip: skip * take,
-          take: take,
-          order: {
-              name: "DESC"
-          },
-      });
+    const totalPages = Math.ceil(count / take);
+    const currentPage = Math.ceil(count % take);
 
-      const totalPages = Math.ceil(count / take)
-      const currentPage = Math.ceil(count % take)
-
-      return {
-          total: count,
-          count: data.length,
-          pages: totalPages,
-          currentPage: currentPage,
-          data: data
-      }
+    return {
+      total: count,
+      count: data.length,
+      pages: totalPages,
+      currentPage: currentPage,
+      data: data,
+    };
   }
 
   find = async (

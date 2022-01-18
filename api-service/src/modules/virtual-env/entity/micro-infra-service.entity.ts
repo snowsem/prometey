@@ -12,8 +12,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import {ApiProperty, } from "@nestjs/swagger";
-
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class MicroInfraService extends BaseEntity {

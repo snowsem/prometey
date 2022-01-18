@@ -1,4 +1,4 @@
-import {forwardRef, Module} from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { VenvService } from './services/venv.service';
 import { VirtualEnvController } from './controllers/virtual-env.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,13 +10,13 @@ import { MicroInfraService } from './entity/micro-infra-service.entity';
 import { VenvCronService } from './services/venv-cron.service';
 import { BullModule } from '@nestjs/bull';
 import { CreateVirtualEnvProcessor } from './processors/create-virtual-env.processor';
-import {AuthModule} from "../auth/auth.module";
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
     forwardRef(() => GithubModule),
     BullModule.registerQueue({
-      name: 'virtualEnvQueue',
+      name: CreateVirtualEnvProcessor.getQueueName(),
     }),
     TypeOrmModule.forFeature([
       VirtualEnv,

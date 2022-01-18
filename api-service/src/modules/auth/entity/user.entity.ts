@@ -15,7 +15,7 @@ import {
 
 import { JoinTable } from 'typeorm/browser';
 import { VirtualEnv } from '../../virtual-env/entity/virtual-env.entity';
-import {ApiProperty} from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class User extends BaseEntity {

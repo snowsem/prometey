@@ -9,14 +9,14 @@ import { VenvService } from '../../virtual-env/services/venv.service';
 @Injectable()
 export class GithubService {
   constructor(
-      @Inject(MicroInfraApiService)
-      private infraService: MicroInfraApiService,
+    @Inject(MicroInfraApiService)
+    private infraService: MicroInfraApiService,
 
-      @Inject(MicroInfraRepoService)
-      private repoService: MicroInfraRepoService,
+    @Inject(MicroInfraRepoService)
+    private repoService: MicroInfraRepoService,
 
-      @Inject(forwardRef(()=>VenvService))
-      private venvService: VenvService,
+    @Inject(forwardRef(() => VenvService))
+    private venvService: VenvService,
   ) {}
 
   createBranch = async (envs = []) => {
@@ -44,7 +44,7 @@ export class GithubService {
             //console.log(srv)
             if (srv.service_github_tag) {
               let value = await this.repoService.getServiceDefaultValue(
-                  srv.service_name,
+                srv.service_name,
               );
               value.image.tag = srv.service_github_tag;
               value.deployment_variant = env.title;
@@ -53,10 +53,10 @@ export class GithubService {
               });
 
               return this.infraService.createOrUpdateFileInBranch(
-                  base64encode(value),
-                  `api/${srv.service_name}/stage/values-${env.title}.yaml`,
-                  newBranch,
-                  `Sync Virtual env: ${env.title}`,
+                base64encode(value),
+                `api/${srv.service_name}/stage/values-${env.title}.yaml`,
+                newBranch,
+                `Sync Virtual env: ${env.title}`,
               );
             } else {
               let removeFilePath = null;
@@ -71,9 +71,9 @@ export class GithubService {
               });
               if (removeFilePath) {
                 const remove = await this.infraService.deleteFileInBranch(
-                    removeFilePath,
-                    newBranch,
-                    'Delete file',
+                  removeFilePath,
+                  newBranch,
+                  'Delete file',
                 );
               }
             }
@@ -82,10 +82,10 @@ export class GithubService {
           env.status = VirtualEnvStatus.READY;
           await env.save();
           const merge = await this.infraService.merge(
-              process.env.GITHUB_REPO_OWNER,
-              newBranch,
+            process.env.GITHUB_REPO_OWNER,
+            newBranch,
           );
-          const deleteBranch = await this.infraService.deleteBranch(newBranch)
+          const deleteBranch = await this.infraService.deleteBranch(newBranch);
           // const msg = new SendWsQueue().send({
           //     data: env,
           //     type: MessageTypes.updateVirtualEnv
@@ -93,55 +93,59 @@ export class GithubService {
           // })
         });
       }
-      return 'success'
+      return 'success';
     } catch (e) {
-      console.log(e)
-      throw Error(e)
+      console.log(e);
+      throw Error(e);
     }
     //const wsClient = new WsClient();
     //const infraService = new MicroInfraService();
     //const repoService = new MicroInfraRepoService()
 
     //wsClient.close()
-  }
+  };
 
-  deleteEnv = async (envs = [])=>{
+  deleteEnv = async (envs = []) => {
+    await this.repoService.getRepo(process.env.GITHUB_REPO_BRANCH);
+    if (envs.length < 1) {
+      const getEnvs = await this.venvService.find({
+        where: [{ status: VirtualEnvStatus.WAIT_DELETE }],
+        relations: ['virtualEnvServices'],
+      });
 
-    await this.repoService.getRepo(process.env.GITHUB_REPO_BRANCH)
-    if (envs.length<1) {
-      const getEnvs = await this.venvService.find(
-          {
-            where: [
-              {status: VirtualEnvStatus.WAIT_DELETE},
-            ],
-            relations: ['virtualEnvServices']
-          }
-      )
-
-      envs = getEnvs?.data
+      envs = getEnvs?.data;
     }
 
-    if (envs.length>0) {
+    if (envs.length > 0) {
       try {
-        const newBranch = `venv-autosyc-${Date.now().toString()}`
+        const newBranch = `venv-autosyc-${Date.now().toString()}`;
         const b = await this.infraService.createBranch(newBranch);
 
-        const mapEnv = envs.map(async env=>{
-          const values = this.repoService.getAllValuesPathByVirtualEnv(env.title)
-          console.log(values)
-          const map = values.map( async valuePath => {
-            return await this.infraService.deleteFileInBranch(valuePath, newBranch,`Delete file ${valuePath}`)
+        const mapEnv = envs.map(async (env) => {
+          const values = this.repoService.getAllValuesPathByVirtualEnv(
+            env.title,
+          );
+          console.log(values);
+          const map = values.map(async (valuePath) => {
+            return await this.infraService.deleteFileInBranch(
+              valuePath,
+              newBranch,
+              `Delete file ${valuePath}`,
+            );
           });
           await Promise.all(map);
-          await this.venvService.delete(env.id)
+          await this.venvService.delete(env.id);
         });
-        await Promise.all(mapEnv)
+        await Promise.all(mapEnv);
 
-        const e = await this.infraService.merge(process.env.GITHUB_REPO_OWNER, newBranch)
+        const e = await this.infraService.merge(
+          process.env.GITHUB_REPO_OWNER,
+          newBranch,
+        );
       } catch (e) {
-        console.log(e)
-        throw e
+        console.log(e);
+        throw e;
       }
     }
-  }
+  };
 }
