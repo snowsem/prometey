@@ -8,9 +8,10 @@ import { typeOrmConfig } from './configs';
 import { GithubModule } from './modules/github/github.module';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
 import {PassportModule} from "@nestjs/passport";
 import { WebsocketModule } from './modules/websocket/websocket.module';
+import {WebsocketGateway} from "./modules/websocket/websocket.gateway";
 
 @Module({
   imports: [

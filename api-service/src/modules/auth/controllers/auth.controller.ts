@@ -3,8 +3,12 @@ import {AuthService} from "../auth.service";
 import {AuthUserByGooglePayloadDto} from "../dto/auth-user-by-google-payload.dto";
 import {JwtAuthGuard} from "../jwt-auth.guard";
 import {CurrentUser} from "../current-user.decorator";
+import {ApiBearerAuth, ApiOkResponse, ApiSecurity, ApiTags} from "@nestjs/swagger";
+import {User} from "../entity/user.entity";
 
 @Controller('auth')
+@ApiTags('auth')
+@ApiSecurity('Bearer')
 export class AuthController {
     constructor(
         @Inject(AuthService) private authService
@@ -12,6 +16,8 @@ export class AuthController {
 
     @Get('/me')
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Bearer')
+    @ApiOkResponse({ type: User })
     public getMe(@CurrentUser() user){
         return this.authService.findOneById(user.id)
     }

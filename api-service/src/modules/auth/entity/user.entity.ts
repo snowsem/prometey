@@ -14,7 +14,8 @@ import {
 } from 'typeorm';
 
 import { JoinTable } from 'typeorm/browser';
-import { VirtualEnv } from '../../modules/virtual-env/entity/virtual-env.entity';
+import { VirtualEnv } from '../../virtual-env/entity/virtual-env.entity';
+import {ApiProperty} from "@nestjs/swagger";
 
 @Entity()
 export class User extends BaseEntity {
@@ -22,31 +23,37 @@ export class User extends BaseEntity {
     type: 'bigint',
   })
   @Index({ unique: true })
+  @ApiProperty()
   id: string;
 
   @Column({
     nullable: true,
   })
+  @ApiProperty()
   first_name: string;
 
   @Column({
     nullable: true,
   })
+  @ApiProperty()
   last_name: string;
 
   @Column({
     nullable: true,
   })
+  @ApiProperty()
   avatar: string;
 
   @Column({
     nullable: true,
   })
+  @ApiProperty()
   login: string;
 
   @Column({
     nullable: true,
   })
+  @ApiProperty()
   email: string;
 
   @Column({
@@ -70,11 +77,14 @@ export class User extends BaseEntity {
   token: string;
 
   @CreateDateColumn()
+  @ApiProperty()
   created_at: string;
 
   @UpdateDateColumn({ type: 'timestamp' })
+  @ApiProperty()
   updated_at: number;
 
   @OneToMany(() => VirtualEnv, '')
+  @ApiProperty()
   virtualEnvs: VirtualEnv[];
 }

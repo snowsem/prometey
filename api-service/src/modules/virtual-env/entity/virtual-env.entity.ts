@@ -12,7 +12,8 @@ import {
 } from 'typeorm';
 
 import { VirtualEnvService } from './virtual-env-service.entity';
-import { User } from '../../../auth/entity/user.entity';
+import { User } from '../../auth/entity/user.entity';
+import {ApiProperty} from "@nestjs/swagger";
 
 export enum VirtualEnvStatus {
   PENDING = 'pending',
@@ -27,28 +28,34 @@ export class VirtualEnv extends BaseEntity {
     type: 'bigint',
   })
   @Index({ unique: true })
+  @ApiProperty()
   id: string;
 
   @Column({
     nullable: true,
   })
+  @ApiProperty()
   title: string;
 
   @Column({
     nullable: true,
   })
+  @ApiProperty()
   owner: string;
 
   @Column({
     nullable: true,
     type: 'text',
   })
+  @ApiProperty()
   description: string;
 
   @CreateDateColumn()
+  @ApiProperty()
   created_at: string;
 
   @UpdateDateColumn({ type: 'timestamp' })
+  @ApiProperty()
   updated_at: number;
 
   @OneToMany(() => VirtualEnvService, (ves) => ves.virtualEnv, {
@@ -56,6 +63,7 @@ export class VirtualEnv extends BaseEntity {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
+  @ApiProperty()
   virtualEnvServices: VirtualEnvService[];
 
   @Column({
@@ -63,15 +71,18 @@ export class VirtualEnv extends BaseEntity {
     enum: VirtualEnvStatus,
     default: VirtualEnvStatus.PENDING,
   })
+  @ApiProperty()
   status: VirtualEnvStatus;
 
   @ManyToOne(() => User, (user) => user.virtualEnvs)
   @JoinColumn({ name: 'user_id' })
+  @ApiProperty()
   user: User;
 
   @Column({
     nullable: true,
     type: 'number',
   })
+  @ApiProperty()
   user_id: number;
 }
