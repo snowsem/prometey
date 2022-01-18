@@ -10,7 +10,7 @@ import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
 import {PassportModule} from "@nestjs/passport";
-import {JwtModule} from "@nestjs/jwt";
+import { WebsocketModule } from './modules/websocket/websocket.module';
 
 @Module({
   imports: [
@@ -44,6 +44,7 @@ import {JwtModule} from "@nestjs/jwt";
       },
     }),
     AuthModule,
+    WebsocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
