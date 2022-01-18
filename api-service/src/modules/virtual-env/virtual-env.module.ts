@@ -4,12 +4,13 @@ import { VirtualEnvController } from './controllers/virtual-env.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { VirtualEnv } from './entity/virtual-env.entity';
 import { VirtualEnvService } from './entity/virtual-env-service.entity';
-import { User } from './entity/user.entity';
+import { User } from '../../auth/entity/user.entity';
 import { GithubModule } from '../github/github.module';
 import { MicroInfraService } from './entity/micro-infra-service.entity';
 import { VenvCronService } from './services/venv-cron.service';
 import { BullModule } from '@nestjs/bull';
 import { CreateVirtualEnvProcessor } from './processors/create-virtual-env.processor';
+import {AuthModule} from "../../auth/auth.module";
 
 @Module({
   imports: [

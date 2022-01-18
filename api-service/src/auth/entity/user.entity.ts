@@ -14,7 +14,7 @@ import {
 } from 'typeorm';
 
 import { JoinTable } from 'typeorm/browser';
-import { VirtualEnv } from './virtual-env.entity';
+import { VirtualEnv } from '../../modules/virtual-env/entity/virtual-env.entity';
 
 @Entity()
 export class User extends BaseEntity {

@@ -8,6 +8,7 @@ import { typeOrmConfig } from './configs';
 import { GithubModule } from './modules/github/github.module';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         port: 6379,
       },
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

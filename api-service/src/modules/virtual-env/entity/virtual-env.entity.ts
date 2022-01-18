@@ -5,18 +5,14 @@ import {
   CreateDateColumn,
   BaseEntity,
   Index,
-  PrimaryColumn,
   UpdateDateColumn,
-  Generated,
-  OneToOne,
   JoinColumn,
   OneToMany,
   ManyToOne,
 } from 'typeorm';
 
-import { JoinTable } from 'typeorm/browser';
 import { VirtualEnvService } from './virtual-env-service.entity';
-import { User } from './user.entity';
+import { User } from '../../../auth/entity/user.entity';
 
 export enum VirtualEnvStatus {
   PENDING = 'pending',
