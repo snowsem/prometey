@@ -10,3 +10,4 @@ logs
 /deployment.yaml
 ormconfig.json
 backend/dist
+/chrome-browser-extension/build/

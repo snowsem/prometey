@@ -1,0 +1,17 @@
+{
+  "name": "Prometey Extension",
+  "description": "",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Prometey"
+  },
+  "host_permissions": ["<all_urls>"],
+  "permissions": ["tabs", "cookies"],
+  "icons": {
+    "16": "img.png",
+    "48": "img.png",
+    "128": "img.png"
+  }
+}
