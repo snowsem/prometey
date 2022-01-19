@@ -40,6 +40,11 @@ import { WebsocketModule } from './modules/websocket/websocket.module';
         host: process.env.REDIS_HOST || 'localhost',
         port: 6379,
       },
+      defaultJobOptions: {
+        removeOnComplete: true,
+        attempts: 5,
+        backoff: 60000
+      }
     }),
     AuthModule,
     WebsocketModule,
