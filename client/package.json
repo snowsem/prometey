@@ -49,6 +49,8 @@
     "ws-heartbeat": "^1.2.0"
   },
   "react-dotenv": {
-    "whitelist": ["GOOGLE_CLIENT_ID"]
+    "whitelist": [
+      "GOOGLE_CLIENT_ID"
+    ]
   }
 }

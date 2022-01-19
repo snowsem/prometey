@@ -35,7 +35,7 @@ export function EditVirtualEnvModal(props) {
 
     const onOkHandler = async () => {
         const payload = Object.entries(githubTagsByServiceId).map(([id, service_github_tag]) => ({ id, service_github_tag }));
-        const url = `http://localhost:8888/virtual_env/${data?.id}`;
+        const url = `http://localhost:8888/virtual-env/${data?.id}`;
         const response = await fetch(url, {
             method: 'PATCH',
             headers: {

@@ -19,9 +19,12 @@ export function CreateVirtualEnvModal(props) {
         if (!visible) return;
 
         setLoading(true);
-            const url = 'http://localhost:8888/get_services';
+            const url = 'http://localhost:8888/api/v1/virtual-env/get-services';
             fetch(url, {
                 method: 'GET',
+                headers: {
+                    "Authorization": `Bearer ${getToken()}`
+                }
             }).then((response) => {
                 if (response.status < 400) {
                     response.json().then((json) => {
@@ -42,7 +45,7 @@ export function CreateVirtualEnvModal(props) {
     };
 
     const onOkHandler = async (values) => {
-        const url = 'http://localhost:8888/virtual_env';
+        const url = 'http://localhost:8888/api/v1/virtual-env';
         const githubTagByServiceName = Object.entries(values).reduce((acc, [serviceName, tag]) => {
             acc[serviceName] = tag;
             return acc;
