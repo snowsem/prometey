@@ -13,6 +13,7 @@ import {CreateVirtualEnvProcessor} from './processors/create-virtual-env.process
 
 import {SendMessageWsProcessor} from "../websocket/processors/send-message-ws.processor";
 import {WebsocketModule} from "../websocket/websocket.module";
+import {BrowserExtensionController} from "./controllers/browser-extension.controller";
 
 @Module({
     imports: [
@@ -32,7 +33,7 @@ import {WebsocketModule} from "../websocket/websocket.module";
     ],
     providers: [VenvService, VenvCronService, CreateVirtualEnvProcessor],
     exports: [VenvService, CreateVirtualEnvProcessor],
-    controllers: [VirtualEnvController],
+    controllers: [VirtualEnvController, BrowserExtensionController],
 })
 export class VirtualEnvModule {
 }

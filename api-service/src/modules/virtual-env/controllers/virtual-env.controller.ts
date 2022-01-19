@@ -8,7 +8,7 @@ import {
   Delete,
   HttpCode,
   Patch,
-  UseGuards,
+  UseGuards, Inject,
 } from '@nestjs/common';
 import { VenvService } from '../services/venv.service';
 import { PaginationParams } from '../../../types/PaginationParams';
@@ -32,8 +32,8 @@ import { VirtualEnv } from '../entity/virtual-env.entity';
 @ApiSecurity('Bearer')
 export class VirtualEnvController {
   constructor(
-    private readonly virtualEnvService: VenvService,
-    private git: MicroInfraApiService,
+      @Inject(VenvService)
+      private readonly virtualEnvService: VenvService,
   ) {}
 
   @Get('/get-services')

@@ -264,4 +264,16 @@ export class VenvService {
       data: data,
     };
   };
+
+  getVirtualEnvsAndHeaders = async () => {
+    const data = await this.virtualEnvRepository.find({
+      cache: false,
+      order: {
+        id: 'DESC',
+      },
+      relations: ['virtualEnvServices', 'user'],
+    });
+
+    return data;
+  };
 }

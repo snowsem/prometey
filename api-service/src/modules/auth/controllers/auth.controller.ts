@@ -6,13 +6,14 @@ import {CurrentUser} from '../current-user.decorator';
 import {ApiBearerAuth, ApiOkResponse, ApiSecurity, ApiTags,} from '@nestjs/swagger';
 import {User} from '../entity/user.entity';
 import {SendMessageWsProcessor} from "../../websocket/processors/send-message-ws.processor";
+import {GoogleAuthType} from "../types/google-auth.type";
 
 @Controller('auth')
 @ApiTags('auth')
 @ApiSecurity('Bearer')
 export class AuthController {
   constructor(
-      @Inject(AuthService) private authService,
+      @Inject(AuthService) private authService: AuthService,
   ) {}
 
   @Get('/me')
@@ -24,6 +25,7 @@ export class AuthController {
   }
 
   @Post('/google')
+  @ApiOkResponse({type: GoogleAuthType})
   public authenticateUserByGoogle(@Body() req: AuthUserByGooglePayloadDto) {
     return this.authService.authenticateUserByGoogle(req.token);
   }

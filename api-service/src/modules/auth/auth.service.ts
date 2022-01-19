@@ -9,6 +9,7 @@ import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
 import { OAuth2Client } from 'google-auth-library';
 import { JwtService } from '@nestjs/jwt';
+import {GoogleAuthType} from "./types/google-auth.type";
 
 @Injectable()
 export class AuthService {
