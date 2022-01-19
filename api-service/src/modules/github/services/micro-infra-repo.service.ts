@@ -3,8 +3,8 @@ import { MicroInfraApiService } from './micro-infra-api.service';
 import { Injectable } from '@nestjs/common';
 
 const AdmZip = require('adm-zip');
+//import * as AdmZip from 'adm-zip';
 
-//import {AdmZip} from 'adm-zip'
 @Injectable()
 export class MicroInfraRepoService {
   private microInfraService: MicroInfraApiService;
