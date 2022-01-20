@@ -1,0 +1,82 @@
+version: '3.5'
+
+services:
+  backend:
+    build:
+      context: ./api-service
+      dockerfile: Dockerfile
+#        args:
+#          - NODE_ENV=development
+    container_name: backend_prometey
+    volumes:
+      - ./api-service/src:/app/src
+    env_file:
+      - ./api-service/docker.env
+    ports:
+      - 8889:8888
+    depends_on:
+      - postgres
+      - redis
+    links:
+      - postgres:postgres
+      - redis:redis
+    networks:
+      - test-network
+    restart: always
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - test-network
+    ports:
+      - 6379:6379
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: client_prometey
+    volumes:
+    - ./client/src:/app/src
+    env_file:
+      - ./client/docker.env
+    networks:
+      - test-network
+    restart: always
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/dat
+    environment:
+      - POSTGRES_USER=someuser
+      - POSTGRES_PASSWORD=s0me-p4sswd
+      - POSTGRES_DB=test-db
+      - POSTGRES_PORT=5432
+    ports:
+      - "5432:5432"
+    networks:
+      - test-network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    depends_on:
+      - backend
+    tty: true
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "3000:80"
+      - "3051:443"
+    networks:
+      - test-network
+
+networks:
+  test-network:
+
+volumes:
+  pgdata:

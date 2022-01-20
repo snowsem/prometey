@@ -19,7 +19,7 @@ export function CreateVirtualEnvModal(props) {
         if (!visible) return;
 
         setLoading(true);
-            const url = 'http://localhost:8888/api/v1/virtual-env/get-services';
+            const url = 'http://localhost:3000/api/v1/virtual-env/get-services';
             fetch(url, {
                 method: 'GET',
                 headers: {
@@ -45,7 +45,7 @@ export function CreateVirtualEnvModal(props) {
     };
 
     const onOkHandler = async (values) => {
-        const url = 'http://localhost:8888/api/v1/virtual-env';
+        const url = 'http://localhost:3000/api/v1/virtual-env';
         const githubTagByServiceName = Object.entries(values).reduce((acc, [serviceName, tag]) => {
             acc[serviceName] = tag;
             return acc;

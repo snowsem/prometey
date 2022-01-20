@@ -8,7 +8,7 @@ import { notification } from 'antd';
 import {setWsHeartbeat} from "ws-heartbeat/client";
 import io from 'socket.io-client'
 //const ws = new WebSocket('ws://localhost:8888')
-let socket = io.connect('ws://localhost:8888', {
+let socket = io.connect('ws://localhost:3000', {
     reconnect: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax : 5000,
