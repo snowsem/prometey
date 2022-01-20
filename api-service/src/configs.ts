@@ -6,6 +6,7 @@ export const typeOrmConfig = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   logging: true,
+
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['database/migrations/**/*.js'],
   subscribers: ['src/subscriber/**/*.ts'],

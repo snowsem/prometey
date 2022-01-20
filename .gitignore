@@ -6,8 +6,10 @@ yarn-error.log
 ormconfig.json
 .env
 logs
+/data
 /deploy.yaml
 /deployment.yaml
 ormconfig.json
 backend/dist
 /chrome-browser-extension/build/
+/postgres-data/
