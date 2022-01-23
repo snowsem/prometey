@@ -5,7 +5,7 @@ import ServicesForm from "./ServicesForm";
 import {getToken} from "../App";
 
 export function CreateVirtualEnvModal(props) {
-    const { closeModal, applyCreateModal, visible } = props;
+    const { closeModal, applyCreateModal, visible, api } = props;
 
     const [name, setName] = React.useState(null);
     const [isLoading, setLoading] = React.useState(null);
@@ -19,10 +19,11 @@ export function CreateVirtualEnvModal(props) {
         if (!visible) return;
 
         setLoading(true);
-            const url = 'http://localhost:3000/api/v1/virtual-env/get-services';
+            const url = 'http://localhost:8888/api/v1/virtual-env/get-services';
             fetch(url, {
                 method: 'GET',
                 headers: {
+                    'Content-Type': 'application/json',
                     "Authorization": `Bearer ${getToken()}`
                 }
             }).then((response) => {
@@ -45,7 +46,8 @@ export function CreateVirtualEnvModal(props) {
     };
 
     const onOkHandler = async (values) => {
-        const url = 'http://localhost:3000/api/v1/virtual-env';
+
+        const url = 'http://localhost:8888/api/v1/virtual-env';
         const githubTagByServiceName = Object.entries(values).reduce((acc, [serviceName, tag]) => {
             acc[serviceName] = tag;
             return acc;
@@ -63,12 +65,13 @@ export function CreateVirtualEnvModal(props) {
         });
         const json = await response.json();
         if (response.status <= 400) {
-            applyCreateModal(json.data);
+            applyCreateModal(json);
             closeModal();
         } else {
+            console.log( json)
             notification.error({
                 message: 'Oops',
-                description: json?.errors?.[0]?.title ?? 'Something went wrong. Try again later',
+                description: response?.message?.[0]?.title ?? 'Something went wrong. Try again later',
             });
         }
     };

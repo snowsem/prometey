@@ -18,6 +18,7 @@ import axios, {AxiosResponse} from "axios";
 import {Component} from "react";
 
 import env from "react-dotenv";
+import {apiClient} from "./apiClient";
 
 export const getToken = ()=>{
     const token = localStorage.getItem('auth_token');
@@ -36,15 +37,11 @@ class App extends Component {
         }
         console.log('success');
 
-        this.api = axios.create({
-            baseURL: 'http://localhost:3000/api/v1/',
-            timeout: 5000,
-            //headers: {'X-Custom-Header': 'foobar'}
-        })
+        this.api = new apiClient();
     }
 
     setAuthHeader = (token)=>{
-        this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        this.api.setAuthHeader(token)
     }
 
     componentDidMount = async ()=> {
@@ -63,8 +60,9 @@ class App extends Component {
             if (!token) return false
 
             this.setAuthHeader(token)
-            const result = await this.api.get('/auth/me')
-            this.setState({...this.state, user:result.data.user})
+            const result = await this.api.getMe()
+            console.log('aaa', result)
+            this.setState({...this.state, user:result})
             console.log('aaa', result)
 
             if (result) {
@@ -75,9 +73,7 @@ class App extends Component {
         } catch (e) {
             console.log('e',e)
             return false;
-
         }
-
     }
 
     logout = ()=>{
@@ -89,14 +85,12 @@ class App extends Component {
     onSuccessAuth = async (res) => {
         console.log('auth');
         try {
-            const result = await this.api.post("/auth/google", {
-                token: res?.tokenId,
-            });
+            const result = await this.api.authGoogle(res?.tokenId);
 
-            this.setState({...this.state, user:result.data.user, isAuth: true})
+            this.setState({...this.state, user:result.user, isAuth: true})
             await this.checkAuth()
-            this.setAuthHeader(result.data.token)
-            localStorage.setItem('auth_token', result.data.token);
+            this.setAuthHeader(result.token)
+            localStorage.setItem('auth_token', result.token);
 
         } catch (err) {
             console.log(err);

@@ -50,7 +50,9 @@
   },
   "react-dotenv": {
     "whitelist": [
-      "GOOGLE_CLIENT_ID"
+      "GOOGLE_CLIENT_ID",
+      "API_HOST",
+      "WS_HOST"
     ]
   }
 }

@@ -62,18 +62,18 @@ export class VirtualEnvContainer extends Component {
     }
 
     getAllVirtualEnv = async (offset = 0, limit = 10, params = false)=>{
-        const queryParams = new URLSearchParams();
-        queryParams.append("offset", offset);
-        queryParams.append("limit", limit);
-
-        if(params && params.order) {
-            queryParams.append("order", JSON.stringify(params.order));
-        }
+        // const queryParams = new URLSearchParams();
+        // queryParams.append("offset", offset);
+        // queryParams.append("limit", limit);
+        //
+        // if(params && params.order) {
+        //     queryParams.append("order", JSON.stringify(params.order));
+        // }
 
         this.setState((state)=>{
             return {isLoading:true}
         });
-        const response = await this.api.get(`/virtual-env?${queryParams.toString()}`)
+        const response = await this.api.getVirtualEnvs(limit, offset)
         this.setState(()=>{
             return {virtualEnv: response.data, isLoading:false}
         });
@@ -169,7 +169,7 @@ export class VirtualEnvContainer extends Component {
         this.setState((state)=>{
             return {isLoading:true}
         });
-        const data = await this.api.get(`/virtual-env/${id}`);
+        const data = await this.api.getVirtualEnv(id);
         console.log('!!!.data', data);
         this.setState(()=>{
             return {showEditModal: true, editModalData: data.data, isLoading:false}
@@ -194,6 +194,7 @@ export class VirtualEnvContainer extends Component {
                     openDeleteModal={(id) => this.setState({ idToDelete: id })}
                 />
                 <CreateVirtualEnvModal
+                    api={this.props.api}
                     visible={this.state.showCreateModal}
                     closeModal={this.closeCreateModal}
                     applyCreateModal={this.applyCreateModal}
