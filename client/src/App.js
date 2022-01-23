@@ -83,14 +83,13 @@ class App extends Component {
 
 
     onSuccessAuth = async (res) => {
-        console.log('auth');
         try {
             const result = await this.api.authGoogle(res?.tokenId);
-
-            this.setState({...this.state, user:result.user, isAuth: true})
+            console.log('auth onSuccessAuth', result);
+            this.setState({...this.state, user:result.data.user, isAuth: true})
             await this.checkAuth()
-            this.setAuthHeader(result.token)
-            localStorage.setItem('auth_token', result.token);
+            this.setAuthHeader(result.data.token)
+            localStorage.setItem('auth_token', result.data.token);
 
         } catch (err) {
             console.log(err);
