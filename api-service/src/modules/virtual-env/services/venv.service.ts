@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import {Like, Repository} from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateVirtualEnvDto } from '../dto/create-virtual-env.dto';
 import { MicroInfraApiService } from '../../github/services/micro-infra-api.service';
@@ -14,6 +14,7 @@ import { Queue } from 'bull';
 import { CreateVirtualEnvProcessor } from '../processors/create-virtual-env.processor';
 import {SendMessageWsProcessor} from "../../websocket/processors/send-message-ws.processor";
 import {MessageTypes} from "../../websocket/websocket.client";
+import {FindManyOptions} from "typeorm/find-options/FindManyOptions";
 
 @Injectable()
 export class VenvService {
@@ -159,7 +160,7 @@ export class VenvService {
     const take = limit || 10;
     const skip = offset || 0;
 
-    const [data, count] = await this.virtualEnvRepository.findAndCount({
+    const options:FindManyOptions  = {
       cache: false,
       skip: skip * take,
       take: take,
@@ -167,7 +168,15 @@ export class VenvService {
         id: 'DESC',
       },
       relations: ['virtualEnvServices', 'user'],
-    });
+    }
+
+    if (search) {
+      options.where = {
+        title: Like(`%${search}%`)
+      }
+    }
+
+    const [data, count] = await this.virtualEnvRepository.findAndCount(options);
 
     const totalPages = Math.ceil(count / take);
     const currentPage = Math.ceil(count % take);

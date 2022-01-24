@@ -30,12 +30,13 @@ export class apiClient {
         return await this.api.post('auth/google', {token})
     }
 
-    getVirtualEnvs = async (limit=null, offset=null)=>{
+    getVirtualEnvs = async (limit=null, offset=null, search=null)=>{
         return await this.api.get('virtual-env', {
             params:
                 {
                     limit,
-                    offset
+                    offset,
+                    search
                 }
         })
     }

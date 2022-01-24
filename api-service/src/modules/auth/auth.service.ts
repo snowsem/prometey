@@ -47,26 +47,35 @@ export class AuthService {
     });
 
     if (!ticket) {
-      throw new UnauthorizedException('Cant auth by Google oath');
+      throw new UnauthorizedException('Cant auth by Google oauth');
     }
+
 
     // @ts-ignore
     const payload = ticket.getPayload();
+    if (
+        payload.email.endsWith('@pdffiller.team') ||
+        payload.email.endsWith('@pdffiller.com') ||
+        payload.email.endsWith('@spbfiller.com') ||
+        payload.email.endsWith('@airslate.com'))
+    {
+      let user = await User.findOne({ email: payload?.email });
 
-    let user = await User.findOne({ email: payload?.email });
+      if (!user) {
+        user = new User();
+        user.email = payload?.email;
+        user.avatar = payload?.picture;
+        user.first_name = payload?.given_name;
+        user.last_name = payload?.family_name;
+        user.token_google = token;
+        user = await this.userRepository.save(user);
+      }
 
-    if (!user) {
-      user = new User();
-      user.email = payload?.email;
-      user.avatar = payload?.picture;
-      user.first_name = payload?.given_name;
-      user.last_name = payload?.family_name;
-      user.token_google = token;
-      user = await this.userRepository.save(user);
+      const _token = this.jwtService.sign({ email: user.email, id: user.id });
+      return { user: user, token: _token };
+    } else {
+      throw new UnauthorizedException(`Only AirSlate teams can auth by Google ${payload.email}`);
     }
-
-    const _token = this.jwtService.sign({ email: user.email, id: user.id });
-    return { user: user, token: _token };
   };
 
   async login(user: any) {

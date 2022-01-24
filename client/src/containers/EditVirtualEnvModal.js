@@ -94,7 +94,7 @@ export function EditVirtualEnvModal(props) {
                 onMouseEnter: () => setServiceNameHovered(record.id),
                 onMouseLeave: () => setServiceNameHovered(null),
                 onClick: () => {
-                    copy(record.service_header_value);
+                    copy(record.service_header);
                     notification.success({
                         message: 'Header name copied',
                     });

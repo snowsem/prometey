@@ -19,6 +19,7 @@ import {Component} from "react";
 
 import env from "react-dotenv";
 import {apiClient} from "./apiClient";
+import {notification} from "antd";
 
 export const getToken = ()=>{
     const token = localStorage.getItem('auth_token');
@@ -92,7 +93,11 @@ class App extends Component {
             localStorage.setItem('auth_token', result.data.token);
 
         } catch (err) {
-            console.log(err);
+            notification.error({
+                message: 'Auth error',
+                description: err.response.data.message,
+            });
+            console.log(err.response.data.message);
         }
     };
 

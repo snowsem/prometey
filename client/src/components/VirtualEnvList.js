@@ -1,5 +1,5 @@
 import {Component} from "react";
-import {Button, PageHeader, Table, Tag, Progress} from "antd";
+import {Button, PageHeader, Table, Tag, Progress, Input} from "antd";
 import {Modal} from "antd/es/modal/Modal";
 import {
     ReloadOutlined,
@@ -9,7 +9,7 @@ import {
     DeleteOutlined
 } from '@ant-design/icons';
 
-
+const Search = Input.Search;
 
 const issueStatusComponent = (status) => {
     let result;
@@ -85,7 +85,18 @@ export class VirtualEnvList extends Component{
         return (
             <div>
                 <PageHeader title={"Virtual Envs"} subTitle={"List"} extra={[
-                    <Button onClick={this.props.openModal} type={"primary"} icon={<ReloadOutlined/>} key="1">Create Env</Button>,
+                    <Search
+                        placeholder="Enter Title"
+                        onSearch={(item=>{
+                            this.props.searchHandler(item)
+                        })}
+                        onChange={(item=>{
+                            this.props.searchHandler(item.target.value)
+                        })}
+                        style={{width: 200}}
+                    />,
+                    <Button onClick={this.props.openModal} type={"primary"} icon={<ReloadOutlined/>} key="1">Create
+                        Env</Button>,
                 ]}/>
                 <Table
                     onRow={(r) => ({
@@ -94,6 +105,8 @@ export class VirtualEnvList extends Component{
                     loading={this.props.isLoading}
                     onChange={this.props.handleChange}
                     pagination={{
+                        pageSize: 30,
+                        showSizeChanger: true,
                         total: this.props.data.total // total count returned from backend
                     }}
                     dataSource={this.props.data.data}

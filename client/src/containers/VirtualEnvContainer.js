@@ -5,10 +5,11 @@ import {CreateVirtualEnvModal} from "../components/CreateVirtualEnvModal";
 import {EditVirtualEnvModal} from "./EditVirtualEnvModal";
 import {ConformModal} from "../components/ConformModal";
 import { notification } from 'antd';
+import env from "react-dotenv";
 import {setWsHeartbeat} from "ws-heartbeat/client";
 import io from 'socket.io-client'
 //const ws = new WebSocket('ws://localhost:8888')
-let socket = io.connect('ws://localhost:8888', {
+let socket = io.connect(env.WS_HOST, {
     reconnect: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax : 5000,
@@ -26,6 +27,7 @@ export class VirtualEnvContainer extends Component {
         this.api = props.api
         this.state = {
             virtualEnv:{},
+            venvSearch: null,
             isLoading: true,
             showCreateModal: false,
             showEditModal: false,
@@ -55,7 +57,7 @@ export class VirtualEnvContainer extends Component {
         });
     }
 
-    getAllVirtualEnv = async (offset = 0, limit = 10, params = false)=>{
+    getAllVirtualEnv = async (offset = 0, limit = 500, params = false)=>{
         // const queryParams = new URLSearchParams();
         // queryParams.append("offset", offset);
         // queryParams.append("limit", limit);
@@ -67,10 +69,22 @@ export class VirtualEnvContainer extends Component {
         this.setState((state)=>{
             return {isLoading:true}
         });
-        const response = await this.api.getVirtualEnvs(limit, offset)
+        let search = null
+        if (this.state.venvSearch) {
+            search = this.state.venvSearch
+        }
+        const response = await this.api.getVirtualEnvs(limit, offset, search)
         this.setState(()=>{
             return {virtualEnv: response.data, isLoading:false}
         });
+    }
+
+    setSearchValue = async (search)=>{
+        console.log(search)
+        await this.setState((state)=>{
+            return {venvSearch: search}
+        });
+        await this.getAllVirtualEnv()
     }
 
     handleChange = async (pagination, filters, sorter) => {
@@ -205,6 +219,7 @@ export class VirtualEnvContainer extends Component {
         return (
             <div>
                 <VirtualEnvList
+                    searchHandler={this.setSearchValue}
                     openEditModal={this.openEditModal}
                     openModal={this.openCreateModal}
                     handleChange={this.handleChange}
