@@ -139,8 +139,8 @@ export class GithubService {
                         );
                     });
                     await Promise.all(map);
-                    await this.venvService.delete(env.id);
-                    this.sendMessageQueue.sendBroadcast({
+                    await this.venvService.deleteEntity(env.id);
+                    await this.sendMessageQueue.sendBroadcast({
                         data: {id:env.id},
                         type: MessageTypes.deleteVirtualEnv
 

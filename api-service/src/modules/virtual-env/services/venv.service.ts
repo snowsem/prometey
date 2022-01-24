@@ -143,6 +143,10 @@ export class VenvService {
 
     virtualEnv.status = VirtualEnvStatus.WAIT_DELETE;
     const result = await this.virtualEnvRepository.save(virtualEnv);
+    this.sendMessageQueue.sendBroadcast({
+      data: virtualEnv,
+      type: MessageTypes.updateVirtualEnv
+    })
     this.virtualEnvQueue.add('delete', result.id);
 
     //const q = new DeleteVirtualEnvQueue().deleteVirtualEnvQueue(result.id)
@@ -151,6 +155,18 @@ export class VenvService {
     // })
     return result;
   };
+
+  deleteEntity = async (id: string)=> {
+    const virtualEnv = await this.virtualEnvRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!virtualEnv) {
+      throw new NotFoundException(`Virtual env with ID:${id} not found.`);
+    }
+    await this.virtualEnvRepository.remove(virtualEnv)
+
+  }
 
   findAll = async (search?: string, limit?: number, offset?: number) => {
     const take = limit || 10;
