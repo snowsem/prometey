@@ -15,7 +15,11 @@ export class apiClient {
     }
 
     getServices = async ()=>{
-        return await this.api.get('virtual-env/get-services')
+        return await this.api.get('virtual-env/get-services', {
+            params: {
+                limit: 1000
+            }
+        })
     }
 
     getMe = async ()=>{
@@ -41,6 +45,14 @@ export class apiClient {
     }
 
     createVirtualEnv = async (data)=>{
-        return await this.api.post(`virtual-env`)
+        return await this.api.post(`virtual-env`, data)
+    }
+
+    updateVirtualEnv = async (id, data)=>{
+        return await this.api.patch(`virtual-env/${id}`, data)
+    }
+
+    deleteVirtualEnv = async (id, data)=>{
+        return await this.api.delete(`virtual-env/${id}`)
     }
 }

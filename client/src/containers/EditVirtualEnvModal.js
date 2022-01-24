@@ -28,27 +28,29 @@ function RowWithCopy({ text, hovered }) {
 }
 
 export function EditVirtualEnvModal(props) {
-    const { closeModalHandler, data, visible } = props;
+    const { closeModalHandler, data, visible, api } = props;
     const [githubTagsByServiceId, setGithubTags] = React.useState({});
     const [serviceNameHovered, setServiceNameHovered] = React.useState(null);
     const [serviceValueHovered, setServiceValueHovered] = React.useState(null);
 
     const onOkHandler = async () => {
         const payload = Object.entries(githubTagsByServiceId).map(([id, service_github_tag]) => ({ id, service_github_tag }));
-        const url = `http://localhost:8888/virtual-env/${data?.id}`;
-        const response = await fetch(url, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ virtualEnvServices: payload }),
-        });
-        if (response.status < 400) {
+        // const url = `http://localhost:8888/virtual-env/${data?.id}`;
+        // const response = await fetch(url, {
+        //     method: 'PATCH',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({ virtualEnvServices: payload }),
+        // });
+
+        try {
+            const resp = await props.api.updateVirtualEnv(data?.id, { virtualEnvServices: payload })
             notification.success({
                 message: 'Tags are saved',
             });
             closeModalHandler();
-        } else {
+        } catch (e) {
             notification.error({
                 message: 'Oops',
                 description: 'Something went wrong. Try again later',

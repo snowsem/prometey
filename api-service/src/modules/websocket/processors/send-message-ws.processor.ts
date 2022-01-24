@@ -44,11 +44,13 @@ export class SendMessageWsProcessor {
   @Process('broadcast')
   public async handleBroadcast(job: Job<unknown>) {
     await this.wsClient.sendBroadcast(_.get(job, 'data'))
+    return 'message broadcasted'
   }
 
   @Process('message')
   public async handleMessage(job: Job<unknown>) {
     await this.wsClient.sendMessage(_.get(job, 'data'))
+    return 'message sended'
   }
 
   @OnQueueCompleted()

@@ -34,7 +34,7 @@ export class VenvService {
     private sendMessageQueue:SendMessageWsProcessor,
   ) {}
 
-  create = async (data: CreateVirtualEnvDto) => {
+  create = async (data: CreateVirtualEnvDto, user: any) => {
     const servicesEntities = await this.microInfraServiceRepository.find();
     //const services = await microInfraService.getAllServices();
     const services = servicesEntities.map((srv) => {
@@ -46,7 +46,7 @@ export class VenvService {
     virtualEnv.title = data.title;
     virtualEnv.description = data.description;
     //virtualEnv.owner = req.body.owner;
-    virtualEnv.user_id = null;
+    virtualEnv.user_id = user.id;
     //const githubTagByServiceName = data?.githubTagByServiceName;
     const githubTagByServiceName = [];
 
@@ -116,11 +116,12 @@ export class VenvService {
     //virtualEnv.virtualEnvServices = [...req.body.virtualEnvServices || [], ...virtualEnv.virtualEnvServices]
 
     const result = await this.virtualEnvRepository.save(virtualEnv);
+    this.virtualEnvQueue.add('update', result.id);
     this.sendMessageQueue.sendBroadcast({
           data: virtualEnv,
           type: MessageTypes.updateVirtualEnv
+    })
 
-      })
     // const q = new UpdateVirtualEnvQueue().updateVirtualEnvQueue(result.id)
     // const msg = new SendWsQueue().send({
     //     data: virtualEnv,
@@ -141,6 +142,12 @@ export class VenvService {
 
     virtualEnv.status = VirtualEnvStatus.WAIT_DELETE;
     const result = await this.virtualEnvRepository.save(virtualEnv);
+    this.virtualEnvQueue.add('update', result.id);
+    this.sendMessageQueue.sendBroadcast({
+      data: virtualEnv,
+      type: MessageTypes.updateVirtualEnv
+
+    })
     //const q = new DeleteVirtualEnvQueue().deleteVirtualEnvQueue(result.id)
     // await virtualEnvRepository.delete({
     //     id: req.params.id

@@ -8,7 +8,7 @@ import { notification } from 'antd';
 import {setWsHeartbeat} from "ws-heartbeat/client";
 import io from 'socket.io-client'
 //const ws = new WebSocket('ws://localhost:8888')
-let socket = io.connect('ws://localhost:3000', {
+let socket = io.connect('ws://localhost:8888', {
     reconnect: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax : 5000,
@@ -16,12 +16,6 @@ let socket = io.connect('ws://localhost:3000', {
 })
 
 let countConnected = 0;
-
-
-// setWsHeartbeat(ws, '{"kind":"ping"}', {
-//     pingTimeout: 6000, // in 60 seconds, if no message accepted from server, close the connection.
-//     pingInterval: 2000, // every 25 seconds, send a ping message to the server.
-// });
 
 export class VirtualEnvContainer extends Component {
     constructor(props) {
@@ -111,6 +105,29 @@ export class VirtualEnvContainer extends Component {
         });
     }
 
+    handleWsDeleteVirtualEnv(data) {
+        if (this.state.virtualEnv?.data === undefined) return;
+        const {id} = data
+        this.setState({ virtualEnv: {
+                ...this.state.virtualEnv,
+                data: this.state.virtualEnv.data.filter(({ id: _id }) => _id !== id )
+            },
+        });
+        // const newState = this.state.virtualEnv.data.map(venv=>{
+        //     if (venv.id === data.id) {
+        //         return data
+        //     } else {
+        //         return venv
+        //     }
+        // })
+        //
+        // // this.setState({ virtualEnv: {
+        // //         ...this.state.virtualEnv,
+        // //         data: [...newState]
+        // //     },
+        // // });
+    }
+
 
     componentDidMount() {
 
@@ -132,6 +149,8 @@ export class VirtualEnvContainer extends Component {
                 this.handleWsUpdateVirtualEnv(message.data)
                 //console.log(JSON.parse(evt.data))
             }
+
+            if (message.type === 'deleteVirtualEnv') this.handleWsDeleteVirtualEnv(message.data)
             console.log('broadcast', message.data)
         })
 
@@ -203,24 +222,10 @@ export class VirtualEnvContainer extends Component {
                     title="Delete this env?"
                     visible={this.state.idToDelete !== null}
                     onOkHandler={async () => {
+
                         const id = this.state.idToDelete;
-                        const url = `http://localhost:8888/virtual-env/${id}`;
                         try {
-                            const resp = await fetch(url, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ title: this.state.name }),
-                            });
-                            if (resp.status >= 400) {
-                                throw Error('Couldn\'t delete item');
-                            }
-                            this.setState({ virtualEnv: {
-                                    ...this.state.virtualEnv,
-                                    data: this.state.virtualEnv.data.filter(({ id: _id }) => _id !== id )
-                                },
-                            });
+                            const r = await this.props.api.deleteVirtualEnv(id);
                         } catch (e) {
                             notification.error({
                                 message: 'Oops',
@@ -234,6 +239,7 @@ export class VirtualEnvContainer extends Component {
                     }}
                 />
                 <EditVirtualEnvModal
+                    api={this.props.api}
                     data={this.state.editModalData}
                     visible={this.state.showEditModal}
                     openModalHandler={this.openEditModal}

@@ -26,6 +26,8 @@ import {
 } from '@nestjs/swagger';
 import { MicroInfraService } from '../entity/micro-infra-service.entity';
 import { VirtualEnv } from '../entity/virtual-env.entity';
+import {UpdateVirtualEnvDto} from "../dto/update-virtual-env.dto";
+import {CurrentUser} from "../../auth/current-user.decorator";
 
 @Controller('virtual-env')
 @ApiTags('virtual-env')
@@ -40,8 +42,9 @@ export class VirtualEnvController {
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse({ type: [MicroInfraService] })
   @ApiBearerAuth('JWT-auth')
-  public getServices() {
-    return this.virtualEnvService.getAvailableService();
+  @ApiQuery({ name: 'limit', required: false })
+  public getServices(@Query() { offset, limit }: PaginationParams,) {
+    return this.virtualEnvService.getAvailableService(limit, offset);
   }
 
   @Get()
@@ -67,8 +70,8 @@ export class VirtualEnvController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse({ type: VirtualEnv })
-  public create(@Body() virtualEnv: CreateVirtualEnvDto) {
-    return this.virtualEnvService.create(virtualEnv);
+  public create(@Body() virtualEnv: CreateVirtualEnvDto, @CurrentUser() user) {
+    return this.virtualEnvService.create(virtualEnv, user);
   }
 
   @Delete(':id')
@@ -81,7 +84,7 @@ export class VirtualEnvController {
   @Patch(':id')
   @ApiOkResponse({ type: VirtualEnv })
   @UseGuards(JwtAuthGuard)
-  public update(@Param('id') id, @Body() virtualEnv: CreateVirtualEnvDto) {
+  public update(@Param('id') id, @Body() virtualEnv: UpdateVirtualEnvDto) {
     return this.virtualEnvService.update(id, virtualEnv);
   }
 }

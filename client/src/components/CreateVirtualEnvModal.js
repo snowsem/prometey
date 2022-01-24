@@ -15,24 +15,21 @@ export function CreateVirtualEnvModal(props) {
         setName(e.target.value);
     };
 
-    React.useEffect(() => {
+    React.useEffect(async () => {
         if (!visible) return;
-
         setLoading(true);
-            const url = 'http://localhost:8888/api/v1/virtual-env/get-services';
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Authorization": `Bearer ${getToken()}`
-                }
-            }).then((response) => {
-                if (response.status < 400) {
-                    response.json().then((json) => {
-                        setServiceNames(json?.data ?? []);
-                    }).finally(() => setLoading(false))
-                }
-            });
+        if (!visible) return;
+        setLoading(true);
+
+        const availableServices = await props.api.getServices();
+
+        if (availableServices.status < 400) {
+            console.log(availableServices)
+            setServiceNames(availableServices?.data?.data ?? []);
+            setLoading(false)
+        }
+        setLoading(false)
+
     }, [visible]);
 
     React.useEffect(() => {
@@ -47,32 +44,37 @@ export function CreateVirtualEnvModal(props) {
 
     const onOkHandler = async (values) => {
 
-        const url = 'http://localhost:8888/api/v1/virtual-env';
+        let arrayServices = [];
         const githubTagByServiceName = Object.entries(values).reduce((acc, [serviceName, tag]) => {
-            acc[serviceName] = tag;
+            if (tag) {
+                arrayServices.push({
+                    service_name: serviceName,
+                    service_github_tag: tag
+                })
+            }
             return acc;
         }, {});
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'authorization': `Bearer ${getToken()}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
+
+        try {
+            const response = await props.api.createVirtualEnv({
                 title: name,
-                githubTagByServiceName,
-            }),
-        });
-        const json = await response.json();
-        if (response.status <= 400) {
-            applyCreateModal(json);
+                virtualEnvServices: arrayServices,
+            })
+            applyCreateModal(response.data);
             closeModal();
-        } else {
-            console.log( json)
-            notification.error({
-                message: 'Oops',
-                description: response?.message?.[0]?.title ?? 'Something went wrong. Try again later',
-            });
+        } catch (e) {
+            if (e.response && e.response.data.statusCode) {
+                notification.error({
+                    message: 'Oops',
+                    description: e.response.data?.message?.[0] ?? 'Something went wrong. Try again later',
+                });
+            } else {
+                console.log(e.response)
+                notification.error({
+                    message: 'Oops',
+                    description: 'Something went wrong. Try again later',
+                });
+            }
         }
     };
 

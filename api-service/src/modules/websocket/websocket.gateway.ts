@@ -21,7 +21,7 @@ export class WebsocketGateway
   @SubscribeMessage('message')
   handleMessage(client: Socket, payload: string): void {
     this.logger.debug(`message ${payload}`);
-    //this.server.emit('message', payload);
+    this.server.emit('message', payload);
   }
 
   @SubscribeMessage('broadcast')

@@ -5,7 +5,7 @@ import { BullModule } from '@nestjs/bull';
 import {WebsocketClient} from "./websocket.client";
 @Module({
   imports: [
-    BullModule.registerQueue({
+      BullModule.registerQueue({
       name: SendMessageWsProcessor.getQueueName(),
     }),
   ],

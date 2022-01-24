@@ -140,6 +140,11 @@ export class GithubService {
                     });
                     await Promise.all(map);
                     await this.venvService.delete(env.id);
+                    this.sendMessageQueue.sendBroadcast({
+                        data: {id:env.id},
+                        type: MessageTypes.deleteVirtualEnv
+
+                    })
                 });
                 await Promise.all(mapEnv);
 
@@ -147,6 +152,9 @@ export class GithubService {
                     process.env.GITHUB_REPO_OWNER,
                     newBranch,
                 );
+
+                const deleteBranch = await this.infraService.deleteBranch(newBranch);
+
             } catch (e) {
                 console.log(e);
                 throw e;

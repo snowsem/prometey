@@ -20,6 +20,7 @@ export enum VirtualEnvStatus {
   WAIT_PR = 'wait_pr',
   READY = 'ready',
   WAIT_DELETE = 'wait_delete',
+  QUEUE_ERROR = 'queue_error',
 }
 
 @Entity()

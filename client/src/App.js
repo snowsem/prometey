@@ -104,13 +104,14 @@ class App extends Component {
                         <div>
                             <LayoutComponent mainState={this.state} logout={this.logout}>
                                     {!this.state.isAuth && (
-
+                                        <div className={"google"}>
                                             <GoogleLogin
 
                                                 clientId={env.GOOGLE_CLIENT_ID}
                                                 onSuccess={this.onSuccessAuth}
                                                 onFailure={this.onFailureAuth}
                                             />
+                                        </div>
                                     )}
 
                                     {this.state.isAuth && (

@@ -1,7 +1,7 @@
 import {Injectable, Logger} from "@nestjs/common";
 import {io} from 'socket.io-client'
 
-@Injectable()
+
 export class WebsocketClient {
     private ws: any;
     private readonly logger = new Logger(WebsocketClient.name);
@@ -57,7 +57,8 @@ export class WebsocketClient {
 
 export enum MessageTypes {
     data = 'data',
-    updateVirtualEnv = 'updateVirtualEnv'
+    updateVirtualEnv = 'updateVirtualEnv',
+    deleteVirtualEnv = 'deleteVirtualEnv'
 }
 
 export interface MessageImpl {
