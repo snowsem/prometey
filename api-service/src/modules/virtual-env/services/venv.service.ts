@@ -144,11 +144,7 @@ export class VenvService {
     virtualEnv.status = VirtualEnvStatus.WAIT_DELETE;
     const result = await this.virtualEnvRepository.save(virtualEnv);
     this.virtualEnvQueue.add('delete', result.id);
-    this.sendMessageQueue.sendBroadcast({
-      data: virtualEnv,
-      type: MessageTypes.updateVirtualEnv
 
-    })
     //const q = new DeleteVirtualEnvQueue().deleteVirtualEnvQueue(result.id)
     // await virtualEnvRepository.delete({
     //     id: req.params.id
