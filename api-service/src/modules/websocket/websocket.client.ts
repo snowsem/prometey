@@ -7,7 +7,7 @@ export class WebsocketClient {
     private readonly logger = new Logger(WebsocketClient.name);
 
     constructor() {
-        this.ws = io(`wss://${process.env.APP_HOST}:${process.env.APP_PORT}`, {
+        this.ws = io(`${process.env.WS_HOST}`, {
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
             reconnectionAttempts: 10,
