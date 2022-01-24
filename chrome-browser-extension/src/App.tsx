@@ -63,7 +63,7 @@ function App() {
   }
 
   React.useEffect(() => {
-    const url = 'https://lucky-dingo-26.loca.lt/api/v1/browser-extension/get-data';
+    const url = 'https://prometey.airppm.com/api/v1/browser-extension/get-data';
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
@@ -102,7 +102,7 @@ function App() {
       .forEach((virtualEnvService) => {
         chrome.cookies.set(
           {
-            url: 'https://www.airslate.com', // https://www.airslate-stage.xyz/
+            url: 'https://www.airslate-stage.xyz', // https://www.airslate-stage.xyz/
             path: '/',
             // domain: '.airlate.com',
             name: virtualEnvService.service_header,
