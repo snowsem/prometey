@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { VirtualEnvModule } from './modules/virtual-env/virtual-env.module';
@@ -9,6 +9,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './modules/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { WebsocketModule } from './modules/websocket/websocket.module';
+import LogsMiddleware from "./core/middlewares/LogMiddleware";
+import DatabaseLogger from "./core/typeOrmExtends/DatabaseLogger";
 
 @Module({
   imports: [
@@ -23,7 +25,8 @@ import { WebsocketModule } from './modules/websocket/websocket.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      logging: false,
+      logging: ['error', 'warn'],
+      logger: new DatabaseLogger(),
       autoLoadEntities: true,
       synchronize: true,
       entities: ['dist/**/*.entity{.ts,.js}'],
@@ -52,4 +55,8 @@ import { WebsocketModule } from './modules/websocket/websocket.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LogsMiddleware).forRoutes('*');
+  }
+}
