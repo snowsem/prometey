@@ -5,6 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import {utilities as nestWinstonModuleUtilities, WinstonModule} from "nest-winston";
 import * as winston from 'winston';
 import * as path from "path";
+import {level} from "winston";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -33,6 +34,7 @@ async function bootstrap() {
         }),
         new winston.transports.File({
           dirname: path.join(__dirname, './../logs/info/'),
+          level:'debug',
           filename: 'info.log',
         }),
         new winston.transports.File({
