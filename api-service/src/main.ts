@@ -16,6 +16,7 @@ async function bootstrap() {
       ),
       transports: [
         new winston.transports.Console({
+          level: 'debug',
           format: winston.format.combine(
               // winston.format.colorize({ // I added this but it's still not helping
               //   all: true,
