@@ -7,6 +7,7 @@ import {base64encode} from 'nodejs-base64';
 import {VenvService} from '../../virtual-env/services/venv.service';
 import {MessageTypes, WebsocketClient} from "../../websocket/websocket.client";
 import {SendMessageWsProcessor} from "../../websocket/processors/send-message-ws.processor";
+import { _ } from 'lodash';
 
 @Injectable()
 export class GithubService {
@@ -48,14 +49,28 @@ export class GithubService {
                     const valuesMap = env.virtualEnvServices.map(async (srv) => {
                         //console.log(srv)
                         if (srv.service_github_tag) {
-                            let value = await this.repoService.getServiceDefaultValue(
-                                srv.service_name,
-                            );
+                            let value = await this.repoService.getServiceDefaultValue(srv.service_name)
+                            let mainValue = await this.repoService.getServiceMainValue(srv.service_name)
+
                             value.image.tag = srv.service_github_tag;
                             value.deployment_variant = env.title.toString();
-                            value = yamlStr({
-                                global: {...value},
-                            });
+                            let params = {
+                                global: {...value}
+                            }
+
+                            const cron = _.get(mainValue, 'cron.enabled', null)
+
+                            if (mainValue && cron) {
+                                const main = {
+                                    main: {
+                                        cron: false
+                                    }
+                                }
+
+                                params = {...params, ...main}
+                            }
+
+                            value = yamlStr({...params});
 
                             return this.infraService.createOrUpdateFileInBranch(
                                 base64encode(value),

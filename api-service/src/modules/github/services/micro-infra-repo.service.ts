@@ -61,6 +61,14 @@ export class MicroInfraRepoService {
     ).global;
   };
 
+  getServiceMainValue = (serviceName, folder = 'api') => {
+    return parseYaml(
+        this.getFileByPath(
+            `${folder}/${serviceName}/${this.env}/${this.defaultValueFile}`,
+        ),
+    ).main || null;
+  };
+
   getAllValues = (folder = 'api') => {
     const services = this.getAllServices();
     const map = services.map((srv) => {
