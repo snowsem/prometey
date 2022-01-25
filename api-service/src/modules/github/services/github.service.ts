@@ -52,7 +52,7 @@ export class GithubService {
                                 srv.service_name,
                             );
                             value.image.tag = srv.service_github_tag;
-                            value.deployment_variant = env.title;
+                            value.deployment_variant = env.title.toString();
                             value = yamlStr({
                                 global: {...value},
                             });
