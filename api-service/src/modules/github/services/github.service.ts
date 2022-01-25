@@ -63,7 +63,7 @@ export class GithubService {
                             if (mainValue && cron) {
                                 const main = {
                                     main: {
-                                        cron: false
+                                        cron: {enabled: false}
                                     }
                                 }
 
