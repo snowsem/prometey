@@ -5,7 +5,7 @@ import {Content} from "antd/es/layout/layout";
 
 const { Option } = Select;
 
-const domain = '.airslate.com';
+const domain = '.airslate-stage.xyz';
 const layout = {
     labelCol: {
         span: 8,
@@ -104,7 +104,7 @@ function App() {
           {
             url: 'https://www.airslate-stage.xyz', // https://www.airslate-stage.xyz/
             path: '/',
-            // domain: '.airlate.com',
+            domain: domain,
             name: virtualEnvService.service_header,
             value: virtualEnvService.service_header_value,
           },
