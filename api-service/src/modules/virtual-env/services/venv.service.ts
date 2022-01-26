@@ -53,7 +53,7 @@ export class VenvService {
 
     if (data?.virtualEnvServices) {
       data?.virtualEnvServices.forEach((v) => {
-        githubTagByServiceName[v.service_name] = v.service_github_tag;
+        githubTagByServiceName[v.service_name] = v.service_github_tag.trim();
       });
     }
 
