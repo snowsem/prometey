@@ -44,7 +44,7 @@ export class VenvService {
 
     const virtualEnv = new VirtualEnv();
 
-    virtualEnv.title = data.title;
+    virtualEnv.title = data.title.replace(' ','-');
     virtualEnv.description = data.description;
     //virtualEnv.owner = req.body.owner;
     virtualEnv.user_id = user.id;
