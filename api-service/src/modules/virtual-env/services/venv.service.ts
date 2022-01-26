@@ -43,8 +43,7 @@ export class VenvService {
     });
 
     const virtualEnv = new VirtualEnv();
-
-    virtualEnv.title = data.title.replace(' ','-');
+    virtualEnv.title = data.title.trim().split(' ').join('-');
     virtualEnv.description = data.description;
     //virtualEnv.owner = req.body.owner;
     virtualEnv.user_id = user.id;

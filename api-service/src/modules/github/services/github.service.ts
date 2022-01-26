@@ -53,7 +53,7 @@ export class GithubService {
                             let mainValue = await this.repoService.getServiceMainValue(srv.service_name)
 
                             value.image.tag = srv.service_github_tag.trim();
-                            value.deployment_variant = env.title.toString().trim();
+                            value.deployment_variant = env.title.toString().trim().split(' ').join('-');
                             let params = {
                                 global: {...value}
                             }
