@@ -8,6 +8,7 @@ import {
     SyncOutlined,
     DeleteOutlined
 } from '@ant-design/icons';
+import {UserAvatarComponent} from "./UserAvatarComponent";
 
 const Search = Input.Search;
 
@@ -59,11 +60,16 @@ export class VirtualEnvList extends Component{
                 key: 'created_at',
             },
             {
+                title: 'Updated at',
+                dataIndex: 'updated_at',
+                key: 'updated_at',
+            },
+            {
                 title: 'Owner',
                 dataIndex: 'user',
                 key: 'user',
                 render: (text, record) => (
-                   record.user?.email
+                    <UserAvatarComponent>{record?.user}</UserAvatarComponent>
                 ),
             },
             {
