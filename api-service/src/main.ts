@@ -33,27 +33,27 @@ async function bootstrap() {
           filename: 'error.log', //name of file where will be saved logging result
           level: 'warn',
         }),
-        new winston.transports.File({
-          dirname: path.join(__dirname, './../logs/info/'),
-          level:'debug',
-          filename: 'info.log',
-        }),
-        new winston.transports.File({
-          format: winston.format.combine(
-              winston.format.uncolorize({ // I added this but it's still not helping
-                message: false,
-                level: true,
-              }),
-              winston.format.label({ label: 'API' }),
-              winston.format.timestamp(),
-              winston.format.printf(({ level, message, label, timestamp }) => {
-                return `${timestamp} [${label}] ${level}: ${message}`;
-              }),
-          ),
-          dirname: path.join(__dirname, './../logs/console/'),
-          filename: 'console.log',
-          maxsize: 1024 * 1024 * 10,
-        }),
+        // new winston.transports.File({
+        //   dirname: path.join(__dirname, './../logs/info/'),
+        //   level:'debug',
+        //   filename: 'info.log',
+        // }),
+        // new winston.transports.File({
+        //   format: winston.format.combine(
+        //       winston.format.uncolorize({ // I added this but it's still not helping
+        //         message: false,
+        //         level: true,
+        //       }),
+        //       winston.format.label({ label: 'API' }),
+        //       winston.format.timestamp(),
+        //       winston.format.printf(({ level, message, label, timestamp }) => {
+        //         return `${timestamp} [${label}] ${level}: ${message}`;
+        //       }),
+        //   ),
+        //   dirname: path.join(__dirname, './../logs/console/'),
+        //   filename: 'console.log',
+        //   maxsize: 1024 * 1024 * 10,
+        // }),
       ],
     })
   })
